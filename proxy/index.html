@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!--proxy的简单使用-->
+    <script>
+        var foo = {
+            name: 'rose'
+        }
+        var newObj = new Proxy(foo, {
+            get: function(target, key) {
+                return target[key]
+            }
+        })
+        console.log(newObj.name)
+    </script>
+
+    <!--实现数据双向绑定-->
+    <input type="text" id="dom1">
+    <textarea name="" id="dom2" cols="30" rows="10"></textarea>
+    <script>
+        // 双向绑定的模拟
+        var origin = {
+            elId: 'dom1', 
+            name: ''
+        }
+        var origin2 = {
+            elId: 'dom2',
+            name: ''
+        }
+        var handler = {
+            set: function(target, key, val) {
+                if (target.elId) {
+                    target[key] = val
+                    document.getElementById(target.elId).value = val
+                }
+            }
+        }
+        var proxy = new Proxy(origin, handler)
+        var proxy2 = new Proxy(origin2, handler)
+        var input = document.getElementById('dom1')
+        input.addEventListener('keyup', function() {
+            proxy.name = input.value
+            proxy2.name = input.value
+        }, false)
+        proxy.name = '12'
+        console.log(origin)
+    </script>
+</body>
+</html>

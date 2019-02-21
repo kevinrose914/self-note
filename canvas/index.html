@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="400" style="border: 1px solid red"></canvas>
+    <script>
+        var canvas = document.getElementById('canvas')
+        var ctx = canvas.getContext('2d')
+        var PieChart = function(ctx) {
+            this.ctx = ctx || document.getElementById('canvas').getContext('2d')
+            this.w = this.ctx.canvas.width
+            this.h = this.ctx.canvas.height
+            // 圆心坐标
+            this.x0 = this.w / 2 + 60
+            this.y0 = this.h / 2
+            // 半径
+            this.radius = 150
+        }
+        PieChart.prototype.init = function(data) {
+            this.drawPie(data)
+        }
+        PieChart.prototype.drawPie = function(data) {
+            // 弧度转换
+            this.transformAngle(data)
+        }
+        PieChart.prototype.transformAngle = function(data) {
+            data.forEach(i => {
+                
+            })
+        }
+        var data = [
+            {
+                title: '15-20',
+                number: 6
+            },
+            {
+                title: '15-20',
+                number: 8
+            },
+            {
+                title: '15-20',
+                number: 10
+            },
+            {
+                title: '15-20',
+                number: 2
+            }
+        ]
+        var pieChart = new PieChart()
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>bom</h1>
+    <button id="baidu">go to baidu</button>
+    <button id="tencent">go to tencent</button>
+    <frame src="./index.html" name="first" />
+    <frameset rows="160,*">
+        <frame src="./index.html" name="first" />
+    </frameset>
+    <script>
+        var nextWindow = null
+        document.querySelector('#baidu').addEventListener('click', function(e) {
+            nextWindow = window.open('http://www.baidu.com', 'baidu')
+            console.log(nextWindow, nextWindow.opener === window)
+            // 将 opener 属性设置为 null 就是告诉浏览器新创建的标签页不需要与打开它的标签页通信，因此可以在独立的进程中运行。标签页之间的联系一旦切断，将没有办法恢复
+        })
+        document.querySelector('#tencent').addEventListener('click', function(e) {
+            var blocked = false
+            try {
+                nextWindow = window.open('http://qq.com', 'tencent')
+                console.log(nextWindow, nextWindow.opener === window)
+                if (nextWindow === null) {
+                    console.log('浏览器内置的程序阻止了弹出窗口')
+                }
+            } catch {
+                blocked = true
+            }
+            if (blocked) {
+                console.log('浏览器扩展或者其他程序阻止了弹出窗口')
+            }
+        })
+    </script>
+    <script>
+        var number = 0
+        var max = 10
+        var timer = null
+        function inter() {
+            number++
+            console.log(number)
+            if (number >= max) {
+                clearInterval(timer)
+                timer = null
+                console.log('done')
+            }
+        }
+        timer = setInterval(inter, 100)
+    </script>
+    <script>
+        var number2 = 0
+        var max2 = 10
+        var timer2 = null
+        function inter2() {
+            number2++
+            console.log(number2)
+            if (number2 < max2) {
+                setTimeout(arguments.callee, 100)
+            } else {
+                clearTimeout(timer2)
+                console.log('done')
+            }
+        }
+        timer2 = setTimeout(inter2, 100)
+    </script>
+    <button id="location">change location</button>
+    <script>
+        document.querySelector('#location').addEventListener('click', function() {
+            location.hash = '#hahaha'
+            location.search = '?name=rose&age=19'
+            location.hostname = 'www.haha.com'
+            location.port = 8085
+            // 每次修改location，页面都会重新加载,并且将生成一条新的历史纪录
+            // location.replace('http://www.baidu.com')  这个方法不会生成新的历史纪录
+        })
+    </script>
+    <script>
+        // 检查浏览器中的插件
+        // 非IE
+        function validate(name) {
+            var cur = name.toLowerCase()
+            for (var i = 0; i < navigator.plugins.length; i++) {
+                var pluginName = navigator.plugins[i].name.toLowerCase()
+                if (pluginName.indexOf(cur) > -1) {
+                    return true
+                }
+            }
+            return false
+        }
+        // IE
+        function validate2(name) {
+            try {
+                new ActiveXObject(name)
+                return true
+            } catch {
+                return false
+            }
+        }
+        // 刷新plugins
+        // navigator.plugins.refresh(bool) // bool为true就会刷新浏览器
+    </script>
+    <script>
+        navigator.geolocation.getCurrentPosition(function(position) {
+            console.log(position)
+        }, function(error) {
+            console.log(error)
+        })
+    </script>
+</body>
+</html>

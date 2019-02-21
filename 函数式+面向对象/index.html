@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script src="./underscore.js"></script>
+    <script>
+        var arr = [1,2,3,4,4,4,3,5,7,8,'a','A']
+        // var result1 = _.uniq(arr, function(value) {
+        //     return typeof value === 'string' ? value.toLowerCase() : value
+        // })
+        // console.log(result1, 'result1')
+        // var result2 = _()
+        // console.log(result2, 'result2')
+        // var result3 = _(arr).uniq(function(value) {
+        //     return typeof value === 'string' ? value.toLowerCase() : value
+        // })
+        // console.log(result3, 'result3')
+        var result4 = _(arr).chain().uniq(function(value) {
+            return typeof value === 'string' ? value.toLowerCase() : value
+        }).end()
+        console.log(result4, 'result4')
+    </script>
+</body>
+</html>
