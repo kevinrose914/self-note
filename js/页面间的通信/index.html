@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <a id="jump" target="blank">子页面1</a>
+    <button id="changeStorage">改变本地存储，实现页面之间的通信</button>
+    <button id="postMessage">使用postMessage，实现页面之间的通信</button>
+    <script src="./storage-channel.js"></script>
+    <script src="./message-channel.js"></script>
+    <script>
+        window.onload = function() {
+            console.log('load')
+            var changeStorageDom = document.querySelector('#changeStorage')
+            var postMessageDom = document.querySelector('#postMessage')
+            var jumpDom = document.querySelector('#jump')
+            var number = 0
+            var childWindow = []
+            changeStorageDom.addEventListener('click', function(e) {
+                // window.localStorage.setItem('number', ++number)
+                channel.post('number', ++number)
+            }, false)
+
+            postMessageDom.addEventListener('click', function(e) {
+                childWindow.forEach(function(t) {
+                    // t.postMessage('number', 'http://localhost:8084')
+                    messageChannel.post(t, 'number', 'http://localhost:8084')
+                })
+            })
+            
+            jumpDom.addEventListener('click', function(e) {
+                childWindow.push(window.open('//localhost:8084/childPage1.html'))
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>window.performance学习</div>
+    <script>
+        window.onload = function() {
+            console.log(performance.now())
+            performance.mark('start')
+            setTimeout(function() {
+                console.log('ok', performance.getEntries())
+            }, 3000)
+            window.navigator.permissions.query({ name: 'geolocation' }).then(res => {
+                console.log(res)
+            })
+        }
+        // performance.timing对象(从上往下，按时间从早到晚)
+        // navigationStart: 当前浏览器窗口的前一个网页关闭，发生unload事件时的Unix毫秒时间戳。如果没有前一个网页，则等于fetchStart属性
+        // redirectStart: http跳转开始的毫秒时间戳，如果没有跳转，或者不是同一个域名内部的跳转，则为0
+        // redirectEnd: http跳转结束时的毫秒时间戳， 如果没有跳转，或者不是同一个域名内部的跳转，则为0
+        // fetchStart：浏览器准备使用http读取文档时的毫秒时间戳， 【在网页查询本地缓存之前发生】
+        // domainLookupStart：dns开始解析域名时的毫秒时间戳，如果使用持久连接，或者信息是从本地缓存获取的，则返回值等同于fetchStart属性的值
+        // domainLookupEnd：dns结束解析域名时的毫秒时间戳，如果使用持久连接，或者信息是从本地缓存获取的，则返回值等同于fetchStart属性的值
+        // connectStart：tcp开始建立连接时的毫秒时间戳，如果为持久连接，则等同于fetchStart的值
+        // connectEnd: tcp完成连接时的毫秒时间戳，如果为持久连接，则等同于fetchStart的值
+        // secureConnectionStart：返回浏览器与服务器开始安全链接的握手时的Unix毫秒时间戳。如果当前网页不要求安全连接，则返回0
+        // requestStart：浏览器开始向服务器发送http请求时（或者开始读取本地缓存时）的毫秒时间戳
+        // responseStart: 浏览器收到服务器的第一个字节时的毫秒时间戳
+        // responseEnd: 浏览器收到服务器的最后一个字节时的毫秒时间戳
+        // domLoading: dom结构开始解析时（即Document.readyState属性变为“loading”、相应的readystatechange事件触发时）的毫秒时间戳
+        // domInteractive：dom结构完成解析，开始加载内嵌资源时（即Document.readyState属性变为“interactive”、相应的readystatechange事件触发时）的毫秒时间戳
+        // domContentLoadedEventStart：当前网页DOMContentLoaded事件发生时（即DOM结构解析完毕、所有脚本开始运行时）的毫秒时间戳
+        // domContentLoadedEventEnd：返回当前网页所有需要执行的脚本执行完成时的Unix毫秒时间戳
+        // domComplete：返回当前网页DOM结构生成时的毫秒时间戳
+        // loadEventStart：返回当前网页load事件的回调函数开始时的Unix毫秒时间戳。如果该事件还没有发生，返回0
+        // loadEventEnd：返回当前网页load事件的回调函数运行结束时的Unix毫秒时间戳。如果该事件还没有发生，返回0。
+        // 页面加载耗时： loadEventStart - navigationStart
+        // 域名解析耗时： domainLookupEnd - domainLookupStart
+        // tcp连接耗时： connectEnd - connectStart
+        // 页面读取第一个字节之前耗时： responseStart - navigationStart
+
+        // performance.now()返回当前网页自navigationStart到当前时间的毫秒数
+        // performance.mark('xxx')标记
+        // performance.getEntries()返回所有http请求的数据，包括上面的mark，safari浏览器不支持
+        // performance.getEntriesByName()同上
+        // performance.navigation = {
+        //     type: 0|1|2|255, // 【0】网页通过点击链接、地址栏输入、表单提交、脚本操作方式加载，【1】reload，【2】前进后退按钮加载，【255】其他
+        //     redirectCount: 0 // 网页重定向跳转次数
+        // }
+    </script>
+</body>
+</html>
