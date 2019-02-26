@@ -36,6 +36,7 @@ export function initMixin (Vue: Class<Component>) {
       initInternalComponent(vm, options)
     } else {
       vm.$options = mergeOptions(
+        // 解析构造器上的属性
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm
@@ -49,6 +50,7 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
+    // 初始化组建层架关系
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)
@@ -94,7 +96,7 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
-  if (Ctor.super) {
+  if (Ctor.super) { // 判断是否是vue的子类
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
     if (superOptions !== cachedSuperOptions) {
@@ -105,7 +107,7 @@ export function resolveConstructorOptions (Ctor: Class<Component>) {
       const modifiedOptions = resolveModifiedOptions(Ctor)
       // update base extend options
       if (modifiedOptions) {
-        extend(Ctor.extendOptions, modifiedOptions)
+        extend(Ctor.extendOptions, modifiedOptions) // 合并到extendOptions
       }
       options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)
       if (options.name) {
@@ -120,7 +122,7 @@ function resolveModifiedOptions (Ctor: Class<Component>): ?Object {
   let modified
   const latest = Ctor.options
   const extended = Ctor.extendOptions
-  const sealed = Ctor.sealedOptions
+  const sealed = Ctor.sealedOptions // Ctor构造初始备份的属性
   for (const key in latest) {
     if (latest[key] !== sealed[key]) {
       if (!modified) modified = {}

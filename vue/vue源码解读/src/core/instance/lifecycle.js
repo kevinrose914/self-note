@@ -27,6 +27,7 @@ export function initLifecycle (vm: Component) {
   // locate first non-abstract parent
   let parent = options.parent
   if (parent && !options.abstract) {
+    // 循环建立父子级关系
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
