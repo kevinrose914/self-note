@@ -1,0 +1,78 @@
+{
+  "name": "wechat",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "vue-cli-service serve --mode development",
+    "test": "vue-cli-service serve --mode test",
+    "prod": "vue-cli-service serve --mode production",
+    "build:dev": "vue-cli-service build --mode development",
+    "build:test": "vue-cli-service build --mode test",
+    "build:prod": "vue-cli-service build --mode production",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "vue": "^2.5.17",
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.0",
+    "@vue/cli-plugin-eslint": "^3.0.0",
+    "@vue/cli-service": "^3.0.0",
+    "babel-plugin-component": "^1.1.1",
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
+    "mini-css-extract-plugin": "^0.4.3",
+    "mint-ui": "^2.2.13",
+    "vue-template-compiler": "^2.5.17",
+    "vue-template-es2015-compiler": "^1.6.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-underscore-dangle": 0,
+      "no-debugger": 0,
+      "comma-dangle": 0,
+      "no-param-reassign": 0,
+      "import/no-extraneous-dependencies": 0,
+      "import/no-unresolved": 0,
+      "import/prefer-default-export": "off",
+      "no-case-declarations": "off",
+      "complexity": "off",
+      "consistent-return": "off",
+      "no-console": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "globals": {
+      "__API_HOST__": true,
+      "__API_LOCATION__": true,
+      "__AMAP_API_KEY__": true,
+      "__ACCOUNT_API__": true,
+      "__CLIENT_ID__": true,
+      "__WX_APPID__": true,
+      "__WX_SECRET__": true,
+      "AMap": true,
+      "$": true
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
