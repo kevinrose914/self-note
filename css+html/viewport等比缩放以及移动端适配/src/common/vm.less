@@ -1,0 +1,29 @@
+@baseFontSize: 75;
+@base: 75rem;
+@designWidth: 750;
+* {
+    margin: 0;
+    padding: 0;
+}
+html {
+    font-size: @baseFontSize / (@designWidth / 2) * 100vw;
+    @media screen and (max-width: 320px) {
+        font-size: 64px;
+    }
+    @media screen and (min-width: 540px) {
+        font-size: 108px;
+    }
+}
+body {
+    max-width: 540px;
+    min-width: 320px;
+    font-size: 12px;
+    margin: 0 auto;
+    background: #e8e8ed;
+}
+
+.header {
+    height: 170 / @base;
+    width: 100%;
+    background: red;
+}

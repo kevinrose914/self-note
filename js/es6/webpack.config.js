@@ -4,7 +4,6 @@ const autoprefixer = require('autoprefixer')
 const htmlWebpackPlugin = require('html-webpack-plugin')
 const extractTextPlugin = require('extract-text-webpack-plugin')
 
-const env = process.env.env_config
 function resolve(filepath) {
     return path.resolve(__dirname, filepath)
 }
@@ -12,7 +11,7 @@ function resolve(filepath) {
 module.exports = {
     mode: 'development',
     entry: {
-        app: env === 'vm' ? resolve('src/vm.js') : resolve('src/flexible.js')
+        app: resolve('src/index.js')
     },
     output: {
         filename: '[name].[bundle].js',
@@ -54,7 +53,7 @@ module.exports = {
         }),
         new htmlWebpackPlugin({
             filename: 'index.html',
-            template: env === 'vm' ? 'vm.html' : 'flexible.html',
+            template: 'index.html',
             inject: true
         })
     ],
