@@ -280,3 +280,203 @@ function f6(n, total=1) {
 }
 console.log(f6(5)) // 120
 ```
+在普通模式下通过函数包装实现尾递归
+```js
+var optimiz = function(fn, returnValue?) {
+    let currentArgs = [], active = false, value
+    return function() {
+        currentArgs.push(arguments)
+        if (!active) { // active是关键
+            active = true
+            while(currentArgs.length > 0) {
+                value = fn.apply(this, currentArgs.shift())
+            }
+            active = false
+            returnValue && return value
+        }
+    }
+}
+var count = optimiz(function(n, total) {
+    if (n === 1) {
+        return total
+    }
+    return count(n-1, n*total)
+})
+// optimiz函数的最后造成count()的执行不到最后一次，是没有返回值的，这样就将递归执行变成了循环执行。只有到了最后一次循环，count()才会有返回值
+```
+不能想下面那样去用optimiz函数
+```js
+var e = f8(function(n) {
+    if (n === 1) {
+        return 1
+    }
+    return n * e(n-1) // 不能这样去写，因为尾递归函数中的value要到最后一步才return出来
+})
+console.log(e(5), '111') // 1
+// 所以这个函数必须也是一个尾调用函数，才能正常运行
+```
+
+# 数组的扩展
+```扩展运算符```: 将数组转换成用逗号分隔的参数序列， 其可以替代es5的apply分割数组参数的方法
+```js
+(function f1() {
+    let arr = [1,2,3]
+    console.log(...arr) // 1,2,3
+    let arr1 = [4,5]
+    arr1.push(...arr)
+    console.log(arr1) // [4,5,1,2,3]
+})()
+// es5
+function a(x, y, z) {...}
+var arr = [1,2,3]
+a.apply(null, arr)
+// 替代es5
+a(...arr)
+```
+```扩展运算符```的运用
+1. 复制数组
+```js
+//es5
+var arr = [1,2]
+var arr2 = arr.concat()
+// now,两种写法都可以
+arr2 = [...arr]
+[...arr2] = arr
+```
+2. 合并数组
+```js
+var arr = [1,2]
+var arr2 = [3,4]
+var arr3 = arr.concat(arr2)
+// now
+var arr3 = [...arr, ...arr2]
+```
+3. map,set结构也可以用扩展运算符
+```js
+(function(){
+    var set = new Set([1,2,3,4])
+    var [...arr] = set 
+    var arr2 = [...set]
+    console.log(arr, arr2) // [1,2,3,4],[1,2,3,4]
+    
+    var map = new Map([
+        ['name', 'qwer'],
+        ['age', 18]
+    ])
+    console.log(...map.keys()) // name, age
+})()
+```
+```Array.from```: 将类数组的对象和可遍历的对象转为真正的数组,一般用于dom对象，或者函数arguments，或者Set结构，可以用Array.prototype.slice来代替
+```Array.of```：用于将一组值，转换为数组
+```js
+(function() {
+    console.log(Array.of(1,2,3)) // [1,2,3]
+})()
+```
+```find(),findIndex()```: find()返回第一个符合条件的成员, findIndex()返回第一个符合条件的成员位置
+```js
+(function() {
+    var arr = [1,2,3,4,5]
+    var value = arr.find(i => i > 3)
+    console.log(value) // 4
+    var value2 = arr.find(function(i) {
+        return i > this.number
+    }, {number: 4})
+    console.log(value2) // 5
+})()
+```
+```查找数组中是否存在NaN```
+```js
+(function() {
+    var arr = [1,2,NaN,3]
+    console.log(arr.indexOf(NaN)) // -1, indexOf找不到
+    var index = arr.findIndex(i => Object.is(NaN, i))
+    console.log(index) // 2,借助于findIndex以及Object.is可以找到NaN
+})()
+```
+```keys(), values(), entries()```
+```js
+(function() {
+    var arr = [4,5,6,7]
+    console.log(arr.keys()) // Interator{}
+    for (let index of arr.keys()) {
+        console.log(index); // 0 1 2 3
+    }
+    for (let index of arr.values()) {
+        console.log(index); // 4 5 6 7
+    }
+    for (let item of arr.entries()) {
+        console.log(item); // [0, 4] [1, 5] [2, 6] [3, 7]
+    }
+})()
+```
+```includes()```: 返回一个布尔值，表示某个数组是否包含给定的值, 与字符串的includes方法类似, 该方法的第二个参数表示搜索的起始位置
+```flat()```: 多维数组转一维数组
+```js
+(function() {
+    var arr = [1,2,[3,4],[5,6,[7,8,[9,10]]]]
+    console.log(arr.flat(Infinity)) // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+})()
+```
+
+# 对象的扩展
+```Object.getOwnPropertyDescriptor(target, key)```: 获取属性的描述对象
+```js
+(function() {
+    let obj = {
+        name: 'sd'
+    }
+    console.log(Object.getOwnPropertyDescriptor(obj, 'name')) 
+    // {value: "sd", writable: true, enumerable: true, configurable: true}
+})()
+// 有四个操作会忽略enumerable为false的属性
+// for...in, Object.keys(), JSON.stingify(), Object.assign()
+```
+```Object.getOwnPropertyNames(target)```: 返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名
+```Object.keys(target)```: 返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名
+```Object.getOwnPropertySymbols(target)```: 返回一个数组，包含对象自身的所有 Symbol 属性的键名
+```Reflect.ownKeys(target)```: 返回一个数组，包含对象自身的所有键名，不管键名是Symbol或字符串，也不管是否可枚举
+```super关键字```: 指向当前对象的原型对象
+```js
+(function() {
+    var person = {
+        say: function() {
+            return this.name
+        }
+    }
+    var foo = {
+        name: 'qwer',
+        say() {// 只能这样书写，super才能用
+            return super.say()
+        }
+    }
+    Object.setPrototypeOf(foo, person) // 设置原型
+    console.log(foo.say()) // qwer
+})()
+```
+```js
+(function() {
+    var obj = { name: 'qwe', age: 18 }
+    var obj2 = { ...obj }
+    console.log(obj2) // { name: 'qwe', age: 18 }
+})()
+```
+```Object.is(param1, param2)```: 比较param1和param2是否严格相等，等同于===
+```Object.keys()```: 返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名
+```Object.values()```: 方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值
+```Object.entries()```: 方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组
+```Object.fromEntries()```: 是Object.entries()的逆操作
+```Object.create()```
+```js
+// Object.create方法的第二个参数添加的对象属性，如果不显式声明，默认是不可遍历的
+const obj = Object.create({}, {p: {value: 42}});
+Object.values(obj) // []
+
+const obj = Object.create({}, {p:
+  {
+    value: 42,
+    enumerable: true
+  }
+});
+Object.values(obj) // [42]
+```
