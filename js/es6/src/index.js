@@ -60,4 +60,20 @@ import { enhancer } from './enhancer.js'
 import { newType } from './symbol-map-set'
 // newType.symbols()
 // newType.sets()
-newType.maps()
+// newType.maps()
+
+/********************proxy, reflect, promise****************************/ 
+import { proxyReflectPromise } from './proxy-reflect-promise'
+// proxyReflectPromise.proxys()
+
+/********************module****************************/ 
+
+
+
+
+
+
+
+
+
+
