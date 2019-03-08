@@ -1,0 +1,81 @@
+{
+    "plugins": [
+        "import"
+    ],
+    "extends": [
+        "eslint:recommended"
+    ],
+    "globals": {
+    },
+    "env": {
+        "es6": true,
+        "browser": true,
+        "node": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": false
+        }
+    },
+    "rules": {
+        "camelcase": [2, {"properties": "never"}],
+        "eqeqeq": 2,
+        "no-var": 2,
+        "semi": [2, "always"],
+        "semi-spacing": [2,
+            {
+                "before": false,
+                "after": true
+            }
+        ],
+        "key-spacing": [2,
+            {
+                "beforeColon": false,
+                "afterColon": true
+            }
+        ],
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
+        "indent": [2, 4, { "SwitchCase": 1 }],
+        "quotes": [2, "single"],
+        "quote-props": [2, "as-needed"],
+        "max-len": [2, 120],
+        "curly": [2, "multi-line"],
+        "no-console": 0,
+        "comma-spacing": [2, { "before": false, "after": true }],
+        "object-curly-spacing": [2, "always"],
+        "comma-style": 2,
+        "comma-dangle": 0,
+        "no-use-before-define": 2,
+        "no-underscore-dangle": 0,
+        "no-debugger": 0,
+        "dot-notation": 2,
+        "no-multi-spaces": ["error", {
+            "ignoreEOLComments": true,
+            "exceptions": { "Property": true }
+        }],
+        "no-param-reassign": 0,
+        "import/no-extraneous-dependencies": 0,
+        "import/no-unresolved": 0
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [
+                    ".js",
+                    ".json"
+                ]
+            }
+        },
+        "import/extensions": [
+            "node_modules"
+        ],
+        "import/core-modules": [],
+        "import/ignore": [
+            "node_modules",
+            "\\.(coffee|scss|css|less|hbs|svg|json)$"
+        ]
+    }
+}
