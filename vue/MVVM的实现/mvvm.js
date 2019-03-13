@@ -55,6 +55,7 @@
     }
 
     function Compiler(el, vm) {
+        debugger;
         vm.$el = document.querySelector(el)
         let fragment = document.createDocumentFragment()
         while (child = vm.$el.firstChild) {
