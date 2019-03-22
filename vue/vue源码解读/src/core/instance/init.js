@@ -54,10 +54,13 @@ export function initMixin (Vue: Class<Component>) {
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)
+    // 抛出beforeCreate钩子函数
     callHook(vm, 'beforeCreate')
+    // 没用过这个inject，暂时不管
     initInjections(vm) // resolve injections before data/props
-    initState(vm)
-    initProvide(vm) // resolve provide after data/props
+    initState(vm) // 对data，props，methods，computed, watch的操作
+    initProvide(vm) // resolve provide after data/props， 没用过吗，先不管
+    // 抛出created钩子函数
     callHook(vm, 'created')
 
     /* istanbul ignore if */
