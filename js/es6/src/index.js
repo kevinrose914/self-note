@@ -50,6 +50,30 @@ resolve()
 
 /********************扩展****************************/ 
 import { enhancer } from './enhancer.js'
-enhancer.stringProto()
-enhancer.numberProto()
-enhancer.functionProto()
+// enhancer.stringProto()
+// enhancer.numberProto()
+// enhancer.functionProto()
+// enhancer.arrayProto()
+// enhancer.objectProto()
+
+/********************symbol，set， map结构****************************/ 
+import { newType } from './symbol-map-set'
+// newType.symbols()
+// newType.sets()
+// newType.maps()
+
+/********************proxy, reflect, promise****************************/ 
+import { proxyReflectPromise } from './proxy-reflect-promise'
+// proxyReflectPromise.proxys()
+
+/********************module****************************/ 
+
+
+
+
+
+
+
+
+
+
