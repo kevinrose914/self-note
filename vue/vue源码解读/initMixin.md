@@ -1,4 +1,4 @@
-# initMixin源码解读
+# initMixin源码解读(定义Vue.prototype._init = function(){})
 ```js
 let uid = 0
 export function initMixin (Vue: Class<Component>) {

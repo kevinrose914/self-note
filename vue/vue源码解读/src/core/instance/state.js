@@ -127,6 +127,7 @@ function initData (vm: Component) {
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
+  // 循环查询当前data里面的属性是否与props，methods里面的重名
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
@@ -144,6 +145,7 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+      // Object.defineProperty(), 最后访问vm.data，实际访问vm._data
       proxy(vm, `_data`, key)
     }
   }
