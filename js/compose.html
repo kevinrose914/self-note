@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function func1 () {
+            console.log('func1')
+        }
+        function func2 () {
+            console.log('func2')
+        }
+        function func3 () {
+            console.log('func3')
+        }
+        function func4 () {
+            console.log('func4')
+        }
+        var funcAry = [func1, func2, func3, func4];
+        function compose(funcAry) {
+            return funcAry.reduce(function(prev, next) {
+                return function() {
+                    prev.call(null, next());
+                }
+            });
+        }
+        var newFunc = compose(funcAry)
+        newFunc();
+    </script>
+</body>
+</html>

@@ -104,11 +104,12 @@
         constructor(mvvm, excepssion, cb) {
             this.mvvm = mvvm
             this.excepssion = excepssion // eg: person.name, person.age
-            this.cb = cb
+            this.cb = []
             this.newDeps = []
             this.value = this.getVal()
+            this.cb.push(cb)
             // 执行以下更新，第一次dom取数据渲染的时候
-            this.cb(this.value)
+            this.update()
         }
         getVal() {
             pushTarget(this)
@@ -130,7 +131,7 @@
             arr.forEach(k => {
                 val = val[k]
             })
-            this.cb(val)
+            this.cb.forEach(cb => cb(val))
         }
     }
 
@@ -184,6 +185,8 @@
     }
 
     context.MVVM = MVVM
+    context.Observer = Observer
+    context.Watcher = Watcher
 
 
 })(this)

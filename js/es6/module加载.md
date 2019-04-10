@@ -32,7 +32,7 @@ es6模块引入的方式<br />
 
 es6模块内部不能使用的变量：arguments, require, module, exports, __filename, __dirname<br />
 
-es6模块月commonjs模块的区别<br />
+es6模块与commonjs模块的区别<br />
 1. commonjs模块输出的是一个值的拷贝，es6模块是值得引用<br />
 2. commonjs是运行时加载，es6模块是编译时输出接口<br />
 3. commonjs加载的是一个对象（module.esports），该对象只有在脚本运行完才会生成；而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成<br />
