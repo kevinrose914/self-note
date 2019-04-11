@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .box {
+            height: 50px;
+            width: 50px;
+            background: red;
+            margin: 10px;
+            /* display: none;  不占空间，无法点击 */
+            /* visibility: hidden; 占空间，无法点击 */
+            /* position: absolute;clip: rect(1px 1px 1px 1px);不占空间，无法点击 */
+            /* position: absolute; top: -999em; 不占空间，无法点击*/
+            /* position: relative; top: -999em; 占空间，无法点击*/
+            /* position: absolute; visibility: hidden;不占空间，无法点击 */
+            /* height: 0; overflow: hidden; 不占空间，无法点击*/
+            /* opacity: 0; filter:Alpha(opacity=0); 占空间，可以点击*/
+            /* pointer-events: none; 占空间，无法点击 */
+        }
+        .refer {
+            height: 50px;
+            width: 50px;
+            background: green;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+    <div class="refer"></div>
+    <script>
+        var box = document.getElementsByClassName('box')[0]
+        box.addEventListener('click', function() {
+            alert('click')
+        }, false)
+    </script>
+</body>
+</html>

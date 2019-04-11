@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="box">
+        <div>{{rose.name}}</div>
+        <div>{{rose.age}}</div>
+        <div>{{rose.work.go}}</div>
+        <div>{{rose.work.say}}</div>
+        <div>{{number}}</div>
+        <input type="text" v-model="number" />
+    </div>
+    <script src="./mvvm.js"></script>
+    <script>
+        var options = {
+            data: {
+                rose: {
+                    name: 'rose',
+                    age: 16,
+                    id: '1234',
+                    work: {
+                        go: '12',
+                        say: '34'
+                    }
+                },
+                number: 10
+            },
+            el: '#box'
+        }
+        new MVVM(options)
+    </script>
+</body>
+</html>
