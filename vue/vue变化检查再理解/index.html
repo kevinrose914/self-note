@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="box">
+        <div>
+            <!-- <div>name: {{rose.name}}</div>
+            <div>age: {{rose.age}}</div> -->
+            <div>{{rose.skill}}</div>
+            <!-- <div>{{rose.work.go}}</div>
+            <div>{{rose.work.say}}</div>
+            <div>{{number}}</div>
+            <input type="text" v-model="number" /> -->
+            <button id="change">改变age值</button>
+        </div>
+    </div>
+    <script src="./mvvm.js"></script>
+    <script>
+        var options = {
+            data: {
+                rose: {
+                    // name: 'rose',
+                    // age: 16,
+                    // id: '1234',
+                    skill: ['说话', '吹牛逼', '打篮球', '写代码'],
+                    // work: {
+                    //     go: '12',
+                    //     say: '34'
+                    // }
+                },
+                // number: 10
+            },
+            el: '#box'
+        }
+        var mvvm = new MVVM(options)
+        // console.log(mvvm)
+        var btn = document.getElementById('change')
+        btn.addEventListener('click', function() {
+            // mvvm.rose.age++
+            // mvvm.number++
+            mvvm.rose.skill.push('1')
+        }, false)
+    </script>
+</body>
+</html>

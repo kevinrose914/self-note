@@ -138,6 +138,7 @@
 
     class Compiler {
         constructor(el, mvvm) {
+            debugger;
             this.init(el, mvvm)
         }
         init(el, mvvm) {
