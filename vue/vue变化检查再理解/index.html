@@ -13,9 +13,9 @@
             <div>age: {{rose.age}}</div> -->
             <div>{{rose.skill}}</div>
             <!-- <div>{{rose.work.go}}</div>
-            <div>{{rose.work.say}}</div>
+            <div>{{rose.work.say}}</div> -->
             <div>{{number}}</div>
-            <input type="text" v-model="number" /> -->
+            <input type="text" v-model="number" />
             <button id="change">改变age值</button>
         </div>
     </div>
@@ -27,13 +27,13 @@
                     // name: 'rose',
                     // age: 16,
                     // id: '1234',
-                    skill: ['说话', '吹牛逼', '打篮球', '写代码'],
+                    skill: [{name: 'rose'}, '说话', '吹牛逼', '打篮球', '写代码'],
                     // work: {
                     //     go: '12',
                     //     say: '34'
                     // }
                 },
-                // number: 10
+                number: 10
             },
             el: '#box'
         }
@@ -42,8 +42,8 @@
         var btn = document.getElementById('change')
         btn.addEventListener('click', function() {
             // mvvm.rose.age++
-            // mvvm.number++
-            mvvm.rose.skill.push('1')
+            mvvm.number++
+            mvvm.rose.skill.push(7,8)
         }, false)
     </script>
 </body>

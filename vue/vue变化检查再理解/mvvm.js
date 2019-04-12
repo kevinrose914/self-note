@@ -136,10 +136,20 @@ function def(target, key, value, enumerable) {
     })
 }
 
+function dependArray (value) {
+    for (let e, i = 0, l = value.length; i < l; i++) {
+        e = value[i]
+        e && e.__ob__ && e.__ob__.dep.depend()
+        if (Array.isArray(e)) {
+            dependArray(e)
+        }
+    }
+}
+
 class Observe {
     constructor(data) {
         def(data, '__ob__', this)
-        this.dep = new Dep()
+        this.dep = new Dep() // key的dep
         if (Array.isArray(data)) {
             data.__proto__ = arrayMethod
             this.observeArray(data)
@@ -156,16 +166,22 @@ class Observe {
         for(let i in object) {
             const val = object[i] // 这儿先备份下来，避免在observe()的时候，出发了get，影响效率
             this.defineReactive(object, i, val)
-            observe(val)
         }
     }
     defineReactive(target, key, value) {
-        let dep = this.dep
+        let dep = new Dep() // value的dep
+        let childOb = observe(value) // key 的 dep
         Object.defineProperty(target, key, {
             // enumerable: true,
             configurable: true,
             get: function() {
                 dep.depend()
+                if (childOb) { // 如果有引用类型的子属性，则在子属性的observe的dep上收集当前依赖
+                    childOb.dep.depend()
+                    if (Array.isArray(value)) {
+                        dependArray(value)
+                    }
+                }
                 return value
             },
             set: function(newVal) {
@@ -184,7 +200,7 @@ function observe(data) {
     if (!data || typeof data !== 'object') {
         return
     }
-    new Observe(data)
+    return new Observe(data)
 }
 
 class MVVM {
