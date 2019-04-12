@@ -6,9 +6,9 @@
 </head>
 <body>
   <div id="app">
-    <a href="/">home</a>
-    <a href="/foo">foo</a>
-    <a href="/bar">bar</a>
+    <a href="#/">home</a>
+    <a href="#/foo">foo</a>
+    <a href="#/bar">bar</a>
     <button id="foo">foo</button>
     <button id="bar">bar</button>
     <div id="router-view"></div>
@@ -20,7 +20,7 @@
   console.log('refresh');
 var router = new Router({
   id: 'router-view',
-  mode: 'history',
+  mode: 'hash',
   routes: [
     {
       path: '/',

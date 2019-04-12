@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .box {
+            height: 300px;
+            width: 300px;
+            margin: 300px auto;
+            border: 1px solid red;
+            color: red;
+            font-size: 40px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .row {
+            height: 40px;
+            display: flex;
+        }
+        .letter {
+            height: 40px;
+            line-height: 40px;
+        }
+        .F {
+            transform: translateY(-90px);
+            transform-origin: 50% 50%;
+            animation: animate2 4s ease 0s infinite;
+        }
+        @keyframes animate1 { 
+            /* 0s */
+            0% {
+                transform: rotateZ(0deg) translateY(-40px);
+            }
+            /* 1s */
+            25% {
+                transform: translateY(0px);
+            }
+            /* 1.5s */
+            37.5% {
+                transform: rotateZ(90deg) translateY(-40px);
+            }
+            /* 2s */
+            50% {
+                transform: rotateZ(180deg) translateY(0px);
+            }
+            /* 2.5s */
+            62.5% {
+                transform: rotateZ(225deg) translateY(-40px);
+            }
+            /* 3s */
+            75% {
+                transform: rotateZ(270deg) translateY(0px);
+            }
+            /* 4s */
+            100% {
+                transform: rotateZ(360deg) translateY(-40px);
+            }
+        }
+        @keyframes animate2 { 
+            /* 0s */
+            0% {
+                transform: translateY(-20px);
+            }
+            /* 1s */
+            25% {
+                transform: translateY(0px);
+            }
+            /* 1.5s */
+            37.5% {
+                transform: translateY(-20px);
+            }
+            /* 2s */
+            50% {
+                transform: translateY(0px);
+            }
+            /* 2.5s */
+            62.5% {
+                transform: translateY(-20px);
+            }
+            /* 3s */
+            75% {
+                transform: translateY(0px);
+            }
+            /* 4s */
+            100% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="row">
+            <div class="left letter F">F</div>
+            <div class="right letter">U</div>
+        </div>
+        <div class="row">
+            <div class="left letter">C</div>
+            <div class="right letter">K</div>
+        </div>
+    </div>
+</body>
+</html>
