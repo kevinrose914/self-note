@@ -35,7 +35,12 @@ class Watcher {
         return value
     }
     update() {
-        this.value = this.get()
+        // 这儿获取数据，不能直接调用上面的get，因为get函数里面会给Dep.target赋值，然后在取值的时候会导致页面死循环
+        let value = this.target
+        this.excep.split('.').forEach(k => {
+            value = value[k]
+        })
+        this.value = value
         this.cb.call(this.target, this.value)
     }
 }
@@ -61,6 +66,7 @@ class Compiler {
             let reg = /\{\{(.*?)\}\}/g // 识别{{xx.xx}}的正则
             if (node.nodeType === 3 && reg.test(txt)) { // 文本节点
                 // 首次渲染要为数据创建watcher，后面就直接用update更新
+                debugger;
                 new Watcher(mvvm, RegExp.$1, (newVal) => {
                     // 替换
                     node.textContent = txt.replace(reg, newVal).trim()
@@ -89,20 +95,74 @@ class Compiler {
     }
 }
 
+const arrayProto = Array.prototype
+const arrayMethod = Object.create(arrayProto)
+const arrayConstructorMethod = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse']
+arrayConstructorMethod.forEach(function(method) {
+    const original = arrayProto[method]
+    Object.defineProperty(arrayMethod, method, {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: function(...args) {
+            debugger;
+            const result = original.apply(this, args)
+            const ob = this.__ob__
+            let inserted
+            switch(method) {
+                case 'push':
+                case 'unshift':
+                    inserted = args
+                    break
+                case 'splice':
+                    inserted = args.slice(2)
+                    break
+            }
+            if (inserted) {
+                ob.observeArray(inserted)
+            }
+            ob.dep.notify()
+            return result
+        }
+    })
+})
+
+function def(target, key, value, enumerable) {
+    Object.defineProperty(target, key, {
+        enumerable: !!enumerable,
+        configurable: true,
+        writable: true,
+        value
+    })
+}
+
 class Observe {
     constructor(data) {
-        this.walk(data)
+        def(data, '__ob__', this)
+        this.dep = new Dep()
+        if (Array.isArray(data)) {
+            data.__proto__ = arrayMethod
+            this.observeArray(data)
+        } else {
+            this.walk(data)
+        }
+    }
+    observeArray(data) {
+        for(let i = 0, len = data.length; i < len; i++) {
+            observe(data[i])
+        }
     }
     walk(object) {
         for(let i in object) {
-            this.defineReactive(object, i, object[i])
-            observe(object[i])
+            const val = object[i] // 这儿先备份下来，避免在observe()的时候，出发了get，影响效率
+            this.defineReactive(object, i, val)
+            observe(val)
         }
     }
     defineReactive(target, key, value) {
-        let dep = new Dep()
+        let dep = this.dep
         Object.defineProperty(target, key, {
-            enumerable: true,
+            // enumerable: true,
             configurable: true,
             get: function() {
                 dep.depend()
@@ -121,7 +181,7 @@ class Observe {
 }
 
 function observe(data) {
-    if (!data || typeof object !== 'object') {
+    if (!data || typeof data !== 'object') {
         return
     }
     new Observe(data)
@@ -130,8 +190,8 @@ function observe(data) {
 class MVVM {
     constructor(options) {
         let data = this._data = options.data
-        observe(data)
         this.proxy(data, this)
+        observe(data)
         new Compiler(options.el, this)
     }
     proxy(data, mvvm) {
