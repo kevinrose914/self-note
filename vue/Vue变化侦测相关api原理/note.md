@@ -142,6 +142,7 @@ function _traverse(value, seen) {
         let k = ary.length
         while(k--) {
             // 递归订阅
+            // 这儿会去执行取值操作getter，然后对应的dep就回去收集当前的Dep.target
             _traverse(value[ary[k]], seen)
         }
     }
