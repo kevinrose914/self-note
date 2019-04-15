@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .box {
+            height: 30px;
+            margin-bottom: 400px;
+            overflow: hidden;
+        }
+        .item {
+            height: 30px;
+            background: gray;
+        }
+        .temp {
+            display: none;
+        }
+        .show {
+            display: block;
+        }
+        .fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .red {
+            background: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="item items">item-1</div>
+    </div>
+    <div class="box">
+        <div class="item items">item-2</div>
+    </div>
+    <div class="box">
+        <div class="item items">item1</div>
+    </div>
+    <div class="box">
+        <div class="item items">item2</div>
+    </div>
+    <div class="box">
+        <div class="item items">item3</div>
+    </div>
+    <div class="box">
+        <div class="item items">item4</div>
+    </div>
+    <script>
+        var box = document.body;
+        var items = document.getElementsByClassName('items');
+        var boxs = document.getElementsByClassName('box');
+        var boxsAry = [...boxs];
+        var offsetTop = [...items].map(i => i.offsetTop)
+        optimizationCb(items, boxs)
+        function cb(doms, top) {
+            let domAray = [...doms];
+            domAray.forEach((dom, index) => {
+                if (willToFixed(boxsAry[index])) {
+                    dom.classList.add('fixed');
+                } else {
+                    dom.classList.remove('fixed');
+                }
+            })
+        }
+        function willToFixed(dom) {
+            return getTop(dom) <= 0
+        }
+        function getTop(dom) {
+            return dom.getBoundingClientRect().top
+        }
+        function optimizationCb(items, boxs) {
+            if (!!IntersectionObserver) {
+                let observer = new IntersectionObserver(function(changes) {
+                    changes.forEach((c) => {
+                        let child = c.target.children[0]
+                        domChange(child, c.target)
+                    })
+                }, {
+                    threshold: [1, 1, 1, 1, 1, 1] 
+                });
+                [...boxs].forEach((i, index) => {
+                    observer.observe(i);
+                })
+            } else {
+                document.addEventListener('scroll', function(e) {
+                    let scrollTop = document.documentElement.scrollTop;
+                    cb(items, scrollTop)
+                })
+            }
+        }
+        function domChange(dom, parentDom) {
+            console.log(parentDom.getBoundingClientRect().top)
+            if (willToFixed(parentDom)) {
+                dom.classList.add('fixed');
+            } else {
+                dom.classList.remove('fixed');
+            }
+        }
+    </script>
+</body>
+</html>

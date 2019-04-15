@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #box {
+            height: 600px;
+            width: 100%;
+            background: green;
+            overflow: scroll;
+        }
+        .item {
+            height: 30px;
+            margin-bottom: 400px;
+            background: gray;
+        }
+        .temp {
+            display: none;
+        }
+        .show {
+            display: block;
+        }
+        .fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .red {
+            background: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="item items">item-1</div>
+    <div class="item temp">item-1</div>
+    <div class="item items">item-2</div>
+    <div class="item temp">item-2</div>
+    <div class="item items">item1</div>
+    <div class="item temp">item1</div> <!--占位，意面item1固定定位后，不占位，导致item2往上窜-->
+    <div class="item items">item2</div>
+    <div class="item temp">item2</div>
+    <div class="item items">item3</div>
+    <div class="item temp">item3</div>
+    <div class="item items">item4</div>
+    <div class="item temp">item4</div>
+    <script>
+        var box = document.body;
+        var items = document.getElementsByClassName('items');
+        var itemsTemp = document.getElementsByClassName('temp');
+        var offsetTop = [...items].map(i => i.offsetTop) // 暂存所有需要吸顶元素的top值,因为元素fixed后，其offsetTop值一直是0
+        var tempAry = [...itemsTemp]
+        document.addEventListener('scroll', function(e) {
+            let scrollTop = document.documentElement.scrollTop;
+            cb(items, scrollTop)
+        })
+        function cb(doms, top) {
+            let domAray = [...doms];
+            domAray.forEach((dom, index) => {
+                if (top > offsetTop[index]) {
+                    dom.classList.add('fixed');
+                    tempAry[index] && tempAry[index].classList.add('show');
+                } else {
+                    dom.classList.remove('fixed');
+                    tempAry[index] && tempAry[index].classList.remove('show');
+                }
+            })
+        }
+    </script>
+</body>
+</html>
