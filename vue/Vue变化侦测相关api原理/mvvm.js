@@ -1,10 +1,21 @@
+let uid = 0
 class Dep {
     constructor() {
+        this.id = uid++
         this.subs = []
     }
     depend() {
         if (Dep.target) {
-            this.subs.push(Dep.target)
+            Dep.target.addDep(this)
+        }
+    }
+    addSub(watcher) {
+        this.subs.push(watcher)
+    }
+    removeSub(watcher) {
+        const index = this.subs.indexOf(watcher)
+        if (index !== -1) {
+            return this.subs.splice(index, 1)
         }
     }
     notify() {
@@ -15,33 +26,96 @@ class Dep {
 }
 Dep.target = null
 
-
+function parsePath(excep) {
+    return function() {
+        let value = this
+        excep.split('.').forEach(k => {
+            value = value[k]
+        })
+        return value
+    }
+}
+function traverse(value) {
+    const seenObject = new Set()
+    _traverse(value, seenObject)
+    seenObject.clear()
+}
+function _traverse(value, seen) {
+    const isA = Array.isArray(value)
+    if (!isA && typeof value !== 'object') {
+        return
+    }
+    if (value.__ob__) {
+        const depid = value.__ob__.dep.id
+        if (seen.has(depid)) {
+            return
+        }
+        seen.add(depid)
+    }
+    if (isA) {
+        let i = value.length
+        while(i--) {
+            _traverse(value[i], seen)
+        }
+    } else {
+        const ary = Object.keys(value)
+        let k = ary.length
+        while(k--) {
+            _traverse(value[ary[k]], seen)
+        }
+    }
+}
 class Watcher {
-    constructor(target, excep, cb) {
+    constructor(target, excep, cb, options) {
         this.target = target
-        this.excep = excep
+        this.deps = [] // 收集dep也是为了取消watcher
+        this.depIds = new Set() // 避免多次收集dep
         this.cb = cb
+        if (options) {
+            this.deep = !!options.deep
+        } else {
+            this.deep = false
+        }
+        if (typeof excep === 'function') {
+            this.getter = excep
+        } else {
+            this.getter = parsePath(excep)
+        }
         this.value = this.get()
+        this.originValue = this.value
         // 首次渲染
-        this.cb.call(this.target, this.value)
+        this.cb.call(this.target, this.originValue, this.value)
+        return this
     }
     get() {
         Dep.target = this
-        let value = this.target
-        this.excep.split('.').forEach(k => {
-            value = value[k]
-        })
+        let value = this.getter.call(this.target)
+        if (this.deep) {
+            traverse(value)
+        }
         Dep.target = null
         return value
     }
     update() {
         // 这儿获取数据，不能直接调用上面的get，因为get函数里面会给Dep.target赋值，然后在取值的时候会导致页面死循环
-        let value = this.target
-        this.excep.split('.').forEach(k => {
-            value = value[k]
-        })
+        let value = this.getter.call(this.target)
         this.value = value
-        this.cb.call(this.target, this.value)
+        this.cb.call(this.target, this.originValue, this.value)
+        this.originValue = this.value
+    }
+    addDep(dep) {
+        const id = dep.id
+        if (!this.depIds.has(id)) {
+            this.depIds.add(id)
+            this.deps.push(dep)
+            dep.addSub(this)
+        }
+    }
+    teardown() {
+        let i = this.deps.length
+        while(i--) {
+            this.deps[i].removeSub(this)
+        }
     }
 }
 
@@ -66,8 +140,7 @@ class Compiler {
             let reg = /\{\{(.*?)\}\}/g // 识别{{xx.xx}}的正则
             if (node.nodeType === 3 && reg.test(txt)) { // 文本节点
                 // 首次渲染要为数据创建watcher，后面就直接用update更新
-                debugger;
-                new Watcher(mvvm, RegExp.$1, (newVal) => {
+                new Watcher(mvvm, RegExp.$1, (oldVal, newVal) => {
                     // 替换
                     node.textContent = txt.replace(reg, newVal).trim()
                 })
@@ -77,7 +150,7 @@ class Compiler {
                     let name = attr.name, exp = attr.value
                     if (name.includes('v-') || name.includes(':')) {
                         // 首次渲染要为数据创建watcher，后面就直接用update更新
-                        new Watcher(mvvm, exp, (newVal) => {
+                        new Watcher(mvvm, exp, (oldVal, newVal) => {
                             node.value = newVal
                         })
                         node.addEventListener('input', e => {
@@ -105,7 +178,6 @@ arrayConstructorMethod.forEach(function(method) {
         configurable: true,
         writable: true,
         value: function(...args) {
-            debugger;
             const result = original.apply(this, args)
             const ob = this.__ob__
             let inserted
@@ -225,7 +297,7 @@ class MVVM {
         }
     }
     $watch(exp, cb, options) {
-        return new Watcher(this, exp, cb)
+        return new Watcher(this, exp, cb, options)
     }
 }
 

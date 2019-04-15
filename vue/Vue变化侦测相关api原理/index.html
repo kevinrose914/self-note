@@ -9,14 +9,16 @@
 <body>
     <div id="box">
         <div>
-            <!-- <div>name: {{rose.name}}</div>
-            <div>age: {{rose.age}}</div> -->
-            <div>{{rose.skill}}</div>
+            <!-- <div>name: {{rose.name}}</div>-->
+            <div>age: {{rose.age}}</div>
+            <!-- <div>{{rose.skill}}</div> -->
             <!-- <div>{{rose.work.go}}</div>
             <div>{{rose.work.say}}</div> -->
             <div>{{number}}</div>
             <input type="text" v-model="number" />
-            <button id="change">改变age值</button>
+            <button id="change">改变number值</button>
+            <button id="changeAge">改变age值</button>
+            <button id="cancelAge">取消绑定监听age值</button>
         </div>
     </div>
     <script src="./mvvm.js"></script>
@@ -25,7 +27,7 @@
             data: {
                 rose: {
                     // name: 'rose',
-                    // age: 16,
+                    age: 16,
                     // id: '1234',
                     skill: [{name: 'rose'}, '说话', '吹牛逼', '打篮球', '写代码'],
                     // work: {
@@ -40,13 +42,28 @@
         var mvvm = new MVVM(options)
         // console.log(mvvm)
         var btn = document.getElementById('change')
+        var btnAge = document.getElementById('changeAge')
+        var cancelAge = document.getElementById('cancelAge')
         btn.addEventListener('click', function() {
             // mvvm.rose.age++
             mvvm.number++
             mvvm.rose.skill.push(7,8)
         }, false)
-        mvvm.$watch('number', function(val) {
-            console.log(val, 'watch')
+        btnAge.addEventListener('click', function() {
+            mvvm.rose.age++
+        })
+        mvvm.$watch('number', function(oldVal, val) {
+            console.log(oldVal, val, 'watch')
+        })
+        let watchAge = mvvm.$watch(function() {
+            return mvvm.rose
+        }, function(o, n) {
+            console.log(o, n);
+        }, {
+            deep: true
+        })
+        cancelAge.addEventListener('click', function() {
+            watchAge.teardown()
         })
     </script>
 </body>
