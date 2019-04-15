@@ -23,7 +23,7 @@
 [学习内容来源](https://juejin.im/post/5caa0c2d51882543fa41e478)
 
 # IntersectionObserver
-**用法：**用来判断元素是否可视
+用法：用来判断元素是否可视
 ```js
 let observer = new IntersectionObserver(function(changes) {
     // 是否可见发生变化时，就会触发此回调
