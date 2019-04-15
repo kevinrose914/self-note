@@ -1,5 +1,5 @@
 # 使用position:sticky实现滚动吸顶
-要求：<br />
+**要求：**
 1. 父元素不能overflow:hidden或者overflow:auto<br />
 2. 元素top、left、bottom、right必须要指定一个<br />
 3. 父元素高度不小于sticky元素的高度<br />
@@ -15,7 +15,7 @@
 > 1. 使用节流函数包装scroll的回调
 > 2. 使用IntersectionObserver和节流结合，以上两种都牺牲了吸顶那一瞬间的平滑度 （见demo4.html）
 
-案例：
+**案例：**
 1. demo1.html  position:sticky实现
 2. demo2.html  offsetTop原生实现
 3. demo3.html  getBoundingClientRect实现
@@ -23,7 +23,7 @@
 [学习内容来源](https://juejin.im/post/5caa0c2d51882543fa41e478)
 
 # IntersectionObserver
-用法：用来判断元素是否可视
+**用法：**用来判断元素是否可视
 ```js
 let observer = new IntersectionObserver(function(changes) {
     // 是否可见发生变化时，就会触发此回调
