@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .test {
+            height: 400px;
+            width: 100%;
+            border: 1px solid #ccc;
+        }
+        .item-outer {
+            height: 30px;
+            margin-bottom: 300px;
+        }
+        .item {
+            height: 30px;
+            background: yellowgreen;
+        }
+
+        /**component*/
+        .outer {
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <vue-sticky-outer class="test">
+            <div>asdasdads</div>
+            <div>asdasdads</div>
+            <div>asdasdads</div>
+            <div>asdasdads</div>
+            <div>asdasdads</div>
+            <div>asdasdads</div>
+            <div>asdasdads</div>
+            <vue-sticky-item v-for="(item, index) in stikyList" :key="index" class="item-outer">
+                <div class="item">{{item.name}}</div>
+            </vue-sticky-item>
+        </vue-sticky-outer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let sticky = Vue.component('vue-sticky-item', {
+            template: `
+                <div class="sticky-item" ref="item"><slot></slot></div>
+            `,
+            mounted() {
+                this.child = this.$refs.item.children
+                if (this.child.length > 1) {
+                    throw new Error('只能是一个子元素')
+                }
+            }
+        })
+        Vue.component('vue-sticky-outer', {
+            template: `
+                <div class="outer" ref="outer"><slot></slot></div>
+            `,
+            mounted() {
+                this.childNodes = [...this.$refs.outer.children].filter(c => {
+                    return c.__vue__ && c.__vue__.$options._componentTag === 'vue-sticky-item'
+                })
+                this.init()
+            },
+            methods: {
+                init() {
+                    if (!!IntersectionObserver) {
+                        let observer = new IntersectionObserver((changes) => {
+                            changes.forEach(e => {
+                                let child = e.target.children[0]
+                                this.changeFixedStyle(e.target, child)
+                            })
+                        }, {
+                            threshold: [1]
+                        })
+                        this.childNodes.forEach(c => {
+                            observer.observe(c)
+                        })
+                    } else {
+                        this.eventInit(this.$refs.outer)
+                    }
+                },
+                eventInit(el) {
+                    el.addEventListener('scroll', (e) => {
+                        this.childNodesCallback(e.target.scrollTop)
+                    })
+                },
+                willToFixed(dom) {
+                    return this.getTop(dom) <= 0
+                },
+                getTop(dom) {
+                    return dom.getBoundingClientRect().top
+                },
+                childNodesCallback(top) {
+                    this.childNodes.forEach((c, i) => {
+                        let child = c.children[0]
+                        this.changeFixedStyle(c, child)
+                    })
+                },
+                changeFixedStyle(parent, child) {
+                    if (this.willToFixed(parent)) {
+                        child.style.position = 'fixed'
+                        child.style.top = '0'
+                        child.style.width="100%"
+                    } else {
+                        child.style.position = 'initial'
+                    }
+                }
+            }
+        })
+        var app = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    stikyList: [
+                        {name: 'item1'},
+                        {name: 'item2'},
+                        {name: 'item3'},
+                        {name: 'item4'}
+                    ]
+                }
+            }
+        })
+    </script>
+</body>
+</html>
