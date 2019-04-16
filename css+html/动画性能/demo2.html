@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #box {
+            height: 50px;
+            width: 50px;
+            background: yellowgreen;
+            position: absolute;
+            animation: transMove 1s linear;
+        }
+        @keyframes transMove {
+            0% {
+                /* transform: translateX(0); */
+                left: 0;
+            }
+            50% {
+                /* transform: translateX(300px); */
+                left: 50%;
+            }
+            100% {
+                /* transform: translateX(600px); */
+                left: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="box"></div>
+    <button id="btn">go</button>
+    <!-- 可以对比left实现滑动和transform实现滑动的区别 -->
+</body>
+</html>
