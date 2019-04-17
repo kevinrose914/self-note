@@ -130,9 +130,12 @@
             // 浏览器在此处进行多次无效布局，成为布局抖动，会导致性能问题
             p[i].style.width = width + 'px';
         }
-        for (let i = 0; i < 100000; i++) {
-            console.log(i)
+        function count() {
+            for (let i = 0; i < 100000; i++) {
+                console.log(i)
+            }
         }
+        count()
     </script>
 </body>
 </html>
