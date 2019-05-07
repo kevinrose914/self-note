@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var object = {
+            a: '1',
+            b: '2',
+            c: {
+                aa: '11',
+                bb: '22',
+                cc: {
+                    aaa: '111',
+                    bbb: '222',
+                    ccc: function() {console.log(1)},
+                    ddd: [1,2,3,4]
+                },
+                dd: function() {
+                    console.log(3)
+                }
+            },
+            d: function() {
+                console.log(2)
+            },
+            e: [1,2,3,4],
+            f: 2
+        }    
+        var newObject1 = JSON.parse(JSON.stringify(object))
+        console.log(newObject1.d) // undefined
+
+        function deepCopy(data) {
+            var newData
+            const type = findType(data)
+            if (type === 'object') {
+                const isA = Array.isArray(data)
+                newData = isA ? [] : {}
+                for (let key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const subType = findType(data[key])
+                        if (subType === 'object') {
+                            newData[key] = deepCopy(data[key])
+                        } else {
+                            newData[key] = data[key]
+                        }
+                    }
+                }
+            } else {
+                newData = data
+            }
+            return newData
+        }
+        function findType(data) {
+            return typeof data
+        }
+        console.log(deepCopy(object))
+    </script>
+</body>
+</html>
