@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../reset.css">
+  <style>
+    #section {
+      counter-reset: amount 0;
+    }
+    .box {
+      height: 30px;
+      width: 30px;
+      margin: 10px;
+      background: red;
+      counter-increment: amount;
+    }
+    .result:after {
+      content: counter(amount)'个';
+    }
+  </style>
+</head>
+<body>
+  <div id="section">
+    <div class="box"></div>
+    <div class="box"></div>
+  </div>
+  <div class="result">box的数量为：</div>
+  <button id="add">增加box</button>
+  <button id="reduce">减少box</button>
+  <script>
+    var section = document.querySelector('#section');
+    var box = document.querySelector('.box');
+    var add = document.querySelector('#add');
+    var reduce = document.querySelector('#reduce');
+    add.addEventListener('click', changeAmount.bind(this, 'add'), false);
+    reduce.addEventListener('click', changeAmount.bind(this, 'reduce'), false);
+    function changeAmount(type) {
+      if (type === 'add') {
+        var copy = box.cloneNode(true);
+        section.appendChild(copy);
+      } else {
+        var child = section.querySelector('.box');
+        section.removeChild(child);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -99,7 +99,7 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
-  if (Ctor.super) { // 判断是否是vue的子类
+  if (Ctor.super) { // 判断是否是vue的子类，通过globalapi里面的extend方法来的
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
     if (superOptions !== cachedSuperOptions) {
