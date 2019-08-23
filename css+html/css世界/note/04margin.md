@@ -1,4 +1,4 @@
-### margin与元素尺寸
+## margin与元素尺寸
 > 对于普通流体元素，margin只能改变水平方向的尺寸；对于具有拉伸特性的绝对定位元素，margin可以改变水平和垂直方向的尺寸。
 ```css
 .father {
@@ -10,7 +10,7 @@
 }
 ```
 
-### margin合并
+## margin合并
 > 1. 相邻兄弟元素之间合并
 > 2. 父级和第一个子元素或者最后一个子元素的合并
 > 3. 空块级元素的magin合并
@@ -34,7 +34,14 @@
 > 3. 里面添加内联元素
 > 4. 设置height或者min-height
 
-### margin的要点及应用
+#### margin合并计算规则
+正正取大值，正负值相加，负负最负值
+
+## margin:auto的填充规则
+> 1. 如果一侧定值，一侧auto，则auto为剩余空间大小
+> 2. 如果两侧均为auto，则平分剩余空间
+
+## margin的要点及应用
 > 1. 一侧定宽的两栏自适应布局, page83
 ```css
 .box {
@@ -55,3 +62,23 @@
 ```
 > 2. 利用margin改变元素尺寸，实现两端对齐，page84
 > 3. 利用margin实现等高布局，page86
+> 4. 让元素右对齐或者垂直水平居中的最佳实践
+```css
+.right {
+  width: 100px;
+  margin-left: auto;
+}
+.center-middle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 200px;
+  height: 200px;
+  margin: auto;
+}
+```
+
+## 遗留问题
+> 1. 内联特性导致的margin失效， page99
