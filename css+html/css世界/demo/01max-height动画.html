@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./reset.css">
+  <style>
+    .box {
+      width: 200px;
+      line-height: 40px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+    }
+    .children {
+      max-height: 0;
+      transition: all .5s;
+      overflow: hidden;
+    }
+    .child {
+      line-height: 20px;
+      color: red;
+    }
+    .box1:hover .children {
+      max-height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box1 box">
+    11111
+    <div class="children">
+      <div class="child">111111111111111111</div>
+      <div class="child">111111111111111111</div>
+      <div class="child">111111111111111111</div>
+      <div class="child">111111111111111111</div>
+      <div class="child">111111111111111111</div>
+      <div class="child">111111111111111111</div>
+      <div class="child">111111111111111111</div>
+      <div class="child">111111111111111111</div>
+    </div>
+  </div>
+  <div class="box2 box">22222</div>
+  <div class="box3 box">33333</div>
+  <script>
+    var a = 0xFF013120;
+    console.log(typeof a);
+  </script>
+</body>
+</html>

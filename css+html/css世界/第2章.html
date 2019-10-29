@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    * {margin: 0;padding:0;}
+    a {height: 30px;width:100px;line-height: 30px;text-align: center;background: red;color: #fff;display: inline-block;}
+    a:active {
+      box-shadow: 3px 3px 3px 3px blue;
+    }
+    div {
+      background: blue;
+      /* line-height: 50px; */
+      font-size: 90px;
+    }
+    span {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <a href="#" id="btn">测试</a>
+  <div><span></span></div>
+  <script>
+    var a = document.querySelector('#btn');
+    a.addEventListener('mousedown' ,function(e) {
+      console.log('down');
+      e.preventDefault();
+    })
+  </script>
+</body>
+</html>
