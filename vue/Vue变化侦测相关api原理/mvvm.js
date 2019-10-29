@@ -221,6 +221,7 @@ function dependArray (value) {
 class Observe {
     constructor(data) {
         def(data, '__ob__', this)
+        this.value = data
         this.dep = new Dep() // key的dep
         if (Array.isArray(data)) {
             data.__proto__ = arrayMethod
@@ -298,6 +299,45 @@ class MVVM {
     }
     $watch(exp, cb, options) {
         return new Watcher(this, exp, cb, options)
+    }
+    $set(target, key, val) {
+        if (Array.isArray(target)) {
+            target.length = Math.max(target.length, key)
+            target.splice(key, 1, val)
+            return val
+        }
+        if (key in target) {
+            target[key] = val
+            return val
+        }
+        // 新增属性，新增的属性没有响应式
+        const ob = target.__ob__
+        if (!ob) {
+            target[key] = val
+            return val
+        }
+        ob.defineReactive(ob.value, key, val)
+        ob.dep.notify()
+        return val
+    }
+    $delete(target, key) {
+        if (Array.isArray(target)) {
+            target.splice(key, 1)
+            return 
+        }
+        const ob = target.__ob__
+        if (!this._hasOwn(target, key)) {
+            return
+        }
+        delete target[key]
+        if (!ob) {
+            return
+        }
+        ob.dep.notify()
+        return
+    }
+    _hasOwn(target, key) {
+        return target.hasOwnProperty(key)
     }
 }
 

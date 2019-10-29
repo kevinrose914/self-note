@@ -11,14 +11,17 @@
         <div>
             <!-- <div>name: {{rose.name}}</div>-->
             <div>age: {{rose.age}}</div>
-            <!-- <div>{{rose.skill}}</div> -->
+            <div>{{rose.skill}}</div>
             <!-- <div>{{rose.work.go}}</div>
             <div>{{rose.work.say}}</div> -->
             <div>{{number}}</div>
+            <div>{{rose.go}}</div>
             <input type="text" v-model="number" />
             <button id="change">改变number值</button>
             <button id="changeAge">改变age值</button>
             <button id="cancelAge">取消绑定监听age值</button>
+            <button id="spliceAry">改变skill中的某一项,向rose中新增go属性</button>
+            <button id="deleteItem">删除skill中的某一项,删除rose中的go属性</button>
         </div>
     </div>
     <script src="./mvvm.js"></script>
@@ -64,6 +67,25 @@
         })
         cancelAge.addEventListener('click', function() {
             watchAge.teardown()
+        })
+
+        
+        var spliceAry = document.getElementById('spliceAry')
+        spliceAry.addEventListener('click', function() {
+            // mvvm.rose.skill[2] = '123'
+            mvvm.$set(mvvm.rose.skill, 2, '123')
+            mvvm.$set(mvvm.rose, 'go', 111)
+            console.log(mvvm)
+        })
+
+
+        var deleteItem = document.getElementById('deleteItem')
+        deleteItem.addEventListener('click', function() {
+            mvvm.$delete(mvvm.rose, 'go')
+            mvvm.$delete(mvvm.rose.skill, 2)
+
+            // mvvm.rose.__ob__.dep.notify()
+            console.log(mvvm)
         })
     </script>
 </body>

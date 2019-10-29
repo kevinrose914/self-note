@@ -9,8 +9,8 @@ export function initAssetRegisters (Vue: GlobalAPI) {
    */
   ASSET_TYPES.forEach(type => {
     Vue[type] = function (
-      id: string,
-      definition: Function | Object
+      id: string, // 指令名称
+      definition: Function | Object // 执行函数
     ): Function | Object | void {
       if (!definition) {
         return this.options[type + 's'][id]
