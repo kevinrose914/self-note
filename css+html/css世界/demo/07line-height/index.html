@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../../reset.css">
+  <style>
+    .box {
+      /* font-size: 0; */
+    }
+    .box i {
+      width: 19px;
+      height: 28px;
+      background: url('./icon_person.png') no-repeat center;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .box span {
+      display: inline-block;
+      /* line-height: 28px; */
+      vertical-align: middle;
+    }
+    .box2 {
+      margin-top: 20px;
+      background: red;
+      height: 128px;
+      line-height: 126px;
+    }
+    .box2 img {
+      height: 96px;
+      vertical-align: middle;
+    }
+    .box3 {
+      margin-top: 20px;
+      background: red;
+      text-align: center;
+    }
+    .box3 img {
+      height: 96px;
+      /* vertical-align: middle; */
+    }
+    .dialog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      text-align: center;
+      overflow: auto;
+      white-space: nowrap;
+      font-size: 0;
+    }
+    .dialog:before {
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+      width: 0;
+    }
+    .content {
+      display: inline-block;
+      font-size: 14px;
+      white-space: normal;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <i></i>
+    <span>x我的</span>
+  </div>
+  <div class="box">
+    <i></i>x我的
+  </div>
+  <div class="box2">
+    x<img src="./trip_empty@2x.png" alt="" />
+  </div>
+  <div class="box3">
+    x<img src="./trip_empty@2x.png" alt="" />
+  </div>
+  <div class="dialog">
+    x
+    <div class="content">
+      <div style="width: 200px; height: 400px; background: red;"></div>
+    </div>
+  </div>
+</body>
+</html>
