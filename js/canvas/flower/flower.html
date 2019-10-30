@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #box {
+            height: 600px;
+            width: 960px;
+            position: relative;
+        }
+        #flower {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="box">
+        <canvas id="bg" height="600" width="960" style="margin: 20px auto">
+        </canvas>
+        <canvas id="flower" height="600" width="960" style="margin: 20px auto"></canvas>
+    </div>
+    <script>
+        var config = {
+            width: 960,
+            height: 600,
+            canvases: ['bg', 'firework'],
+            // skyColor: 'hsla(210, 60%, 5%, 0.2)',
+            skyColor: 'hsla({hue}, 60%, {lightness}%, 0.2)',
+            fireworkTime:{min:8,max:15},
+            //烟花参数本身有默认值 传入undefined则使用默认参数
+            fireworkOpt:{
+                x: undefined,
+                y: undefined,
+                xEnd: undefined,
+                yEnd: 100,
+                count: 300,   //炸裂后粒子数
+                wait: undefined,  //消失后 => 炸裂  等待时间
+            }
+        };
+
+        // 粒子
+        class Particle {
+            constructor({ x, y, size = 0.5, radius = 1.2 } = {}) {
+                this.x = x; // 粒子横坐标
+                this.y = y;
+                this.size = size;
+                this.v = Math.random();
+                this.angle = 2 * Math.PI * Math.random();
+                this.vx = Math.cos(this.angle) * this.v;
+                this.vy = Math.sin(this.angle) * this.v;
+            }
+
+            // 移动
+            move() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.02;
+
+                this.vy *= 0.98;
+                this.vx *= 0.98;
+            }
+
+            // 渲染微粒
+            render(ctx) {
+                this.move();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);
+                ctx.fill();
+            }
+        }
+
+        // 父粒子
+        class Firework {
+            constructor({ x, y = config.height, xEnd, yEnd, count = 300, wait } = {}) {
+                this.x = x || config.width / 8 + Math.random() * config.width * 3 / 4;
+                this.y = y;
+                this.xEnd = xEnd || this.x;
+                this.yEnd = yEnd || config.width / 8 + Math.random() * config.width * 3 / 8;
+                this.size = 2;
+                this.v = -10;
+
+                this.opacity = 0.8;
+                // this.color = `hsla(${360 * Math.random() | 0}, 80%, 60%, 1)`;
+                this.wait = wait || 30 + Math.random() * 30;
+
+                this.count = count;
+                this.particles = [];
+                this.status = 1;
+
+                // 炸裂的时候天空闪亮
+                this.hue = 360 * Math.random() || 0;
+                this.color = `hsla(${this.hue},80%,60%,1)`;
+                this.crateParticle();
+            }
+
+            crateParticle() {
+                for (var i = 0; i < this.count; i++) {
+                    this.particles.push(new Particle({ x: this.xEnd, y: this.yEnd }));
+                }
+            }
+
+            rise() {
+                this.y += this.v * 1;
+                this.v += 0.05;
+                if (this.y - this.yEnd <= 50) {
+                    this.opacity = (this.y - this.yEnd) / 50;
+                }
+                if (this.y <= this.yEnd || this.v >= 0) {
+                    this.status = 2;
+                }
+            }
+
+            getSkyColor() {
+                const skyColor = {
+                    // 只有炸裂阶段才返回亮度
+                    lightness: this.status === 3 ? this.opacity : 0,
+                    hue: this.hue
+                };
+                return skyColor;
+            }
+
+            render(ctx) {
+                switch(this.status) {
+                    case 1:
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.globalCompositeOperation = 'lighter';
+                        ctx.globalAlpha = this.opacity;
+                        ctx.translate(this.x, this.y);
+                        ctx.scale(0.8, 2.3);
+                        ctx.translate(-this.x, -this.y);
+                        ctx.fillStyle = this.color;
+                        ctx.arc(this.x + Math.sin(2*Math.PI*Math.random()) / 1.2, this.y, this.size, 0, 2 * Math.PI, false);
+                        ctx.fill();
+                        ctx.restore();
+                        this.rise();
+                        return true;
+                        break;
+                    case 2:
+                        if (--this.wait <= 0) {
+                            this.opacity = 1;
+                            this.status = 3;
+                        }
+                        return true;
+                        break;
+                    case 3:
+                        ctx.save();
+                        ctx.globalCompositeOperation = 'lighter';
+                        ctx.globalAlpha = this.opacity;
+                        ctx.fillStyle = this.color;
+                        for (var i = 0; i < this.particles.length; i++) {
+                            this.particles[i].render(ctx);
+                        }
+                        ctx.restore();
+                        this.opacity -= 0.01;
+                        return this.opacity > 0;
+                        break;
+                    default:
+                        return false;
+                        break;
+                }
+            }
+        }
+
+        const canvas = {
+            init: function(){
+                //一些属性的设定 可以不用管
+                this.setProperty();
+                this.renderBg();
+                
+                //循环体 **主要
+                this.loop();
+            },
+            setProperty: function(){
+                this.skyColor = {
+                    lightness: 0,
+                    hue: 210
+                };
+                this.fireworks = [];
+                this.width = config.width;
+                this.height = config.height;
+                this.fireworkTime = (config.fireworkTime.min + (config.fireworkTime.max - config.fireworkTime.min) * Math.random()) | 0;
+            
+                this.bgCtx = document.querySelector('#bg').getContext('2d');
+                this.fireworkCtx = document.querySelector('#flower').getContext('2d');
+            },
+            renderBg(){
+                this.bgCtx.fillStyle = 'hsla(210, 60%, 5%, 0.9)'
+                this.bgCtx.fillRect(0, 0, this.width, this.height);
+            },
+            
+            loop(){
+                requestAnimationFrame(this.loop.bind(this));
+                // this.fireworkCtx.clearRect(0, 0, this.width, this.height);
+                // this.fireworkCtx.fillStyle = config.skyColor;
+                this.fireworkCtx.fillStyle = config.skyColor.replace('{lightness}', 5 + this.skyColor.lightness * 15).replace('{hue}' , this.skyColor.hue);
+                this.fireworkCtx.fillRect(0,0,this.width,this.height);
+                // 这里必须重置一下，不然天空的颜色不会更新
+                this.skyColor = {
+                    lightness: 0,
+                    hue: 210
+                };
+                
+                
+                //随机创建烟花
+                if(--this.fireworkTime <= 0){
+                    this.fireworks.push(new Firework(config.fireworkOpt));
+                    //每次到点之后重新设置烟花产生时间 （|0转化为整数）
+                    this.fireworkTime = (config.fireworkTime.min + (config.fireworkTime.max - config.fireworkTime.min) * Math.random()) | 0;
+                }
+            
+                for(let i = this.fireworks.length - 1; i >= 0; --i){
+                    //渲染烟花 （若返回值为false则移除烟花）
+                    // 渲染最亮的微粒的颜色为天空颜色
+                    this.skyColor = this.skyColor.lightness >= this.fireworks[i].getSkyColor().lightness ? this.skyColor : this.fireworks[i].getSkyColor();
+                    !this.fireworks[i].render(this.fireworkCtx) && this.fireworks.splice(i,1);	
+                }
+            
+            }
+        }
+        canvas.init();
+    </script>
+</body>
+</html>

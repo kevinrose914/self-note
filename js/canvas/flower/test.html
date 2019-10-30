@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #box {
+            height: 600px;
+            width: 960px;
+            position: relative;
+        }
+        #flower {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<boby>
+    <div id="box">
+    </div>
+    <script src="./flower.js"></script>
+    <script>
+        var flower = new Flower({
+            wrapper: document.querySelector('#box'),
+        });
+        flower.render();
+    </script>
+</boby>
+</html>
