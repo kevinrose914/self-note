@@ -102,7 +102,6 @@
         }
         draw() {
             // 当前浏览的图片不是最后一张
-            debugger;
             if (this.index + 1 != this.imgList.length) {
                 if (
                     this.radio <
@@ -131,7 +130,7 @@
                 //     this.containerImage, // i
                 //     this.imgNext.imgW, // t 每张图的像素大小
                 //     this.imgNext.imgH, // e 每张图的像素大小
-                //     this.imgNext.areaW, // a 小图的宽高
+                //     this.imgNext.areaW, // a 小图的宽高, 视窗口的宽度像素
                 //     this.imgNext.areaH, // s 小图的宽高
                 //     this.imgNext.areaL, // n 小图在大图中的偏移位置
                 //     this.imgNext.areaT, // g 小图在大图中的偏移位置
@@ -156,16 +155,19 @@
         }
         drawImgOversize(i, t, e, a, s, n, g, r) {
             /**
-             * 根据公式：初始偏移值/初始大小图宽度差 = 现有偏移值/现有宽度差
-             * 故：n / (t-a) = 现有偏移值 / (a / r -a)
-             * 故：现有偏移值 = (a / r - a) * (n / (t - a))
-             * 故：drawImage第二个参数sx = 上一次的位置 - 现有偏移值 = n - (a / r - a) * (n / (t - a))
-             * sy与上同理
+             * 根据公式：初始偏移值/大图像素-中间视窗口容纳的像素:此时为小图宽度=缩放后偏移值/大图像素-中间视窗口容纳的像素
+             * 注意：不管图片怎么缩放，大图像素是不变的
+             * 故：n/(t-a) = x/(t - a/r)
+             * 故：x = n*(t-a/r)/(t-a)
+             * y坐标同理
              */
+            console.log(n - (a / r - a) * (n / (t - a)), n*(t-a/r)/(t-a));
             this.ctx.drawImage(
                 i,
-                n - (a / r - a) * (n / (t - a)),
-                g - (s / r - s) * (g / (e - s)),
+                // n - (a / r - a) * (n / (t - a)),
+                n*(t-a/r)/(t-a),
+                // g - (s / r - s) * (g / (e - s)),
+                g*(e-s/r)/(e-s),
                 a / r,
                 s / r,
                 0,
@@ -183,6 +185,7 @@
              * 故：r/(a-n) * (n/h - n) / 小图画布偏移量 = n / h * 750
              * 故：dx = r/(a-n) * (n/h - n) * h * 750 / n
              */
+            console.log(((n / h - n) * (r / (a - n)) * h * 750) / n, r-(r*(a-n/h)/(a-n)));
             this.ctx.drawImage(
                 i,
                 0,

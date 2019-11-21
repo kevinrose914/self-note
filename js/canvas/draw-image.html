@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="600"></canvas>
+  <img id="img" src="http://static.ws.126.net/f2e/ent/ent_painting2017/images/cover_v2.jpg" alt="">
+  <script>
+    var img = document.querySelector('#img');
+    var el = document.querySelector('#canvas');
+    img.onload = function() {
+      console.log('load')
+      var ctx = el.getContext('2d');
+      ctx.drawImage(img, 0, 0, 600, 600, 30, 30, 600, 600);
+    }
+  </script>
+</body>
+</html>
