@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>波浪</title>
+  <script>
+    function createAdaptCanvas({el, baseW, baseH}) {
+            var nodeName = el.nodeName.toLowerCase();
+            var canvasEl,
+                parentEl,
+                dpr = window.devicePixelRatio,
+                w = baseW || window.innerWidth || document.documentElement.clientWidth,
+                h = baseH || window.innerHeight || document.documentElement.clientHeight;
+            if (nodeName === 'canvas') {
+                canvasEl = el;
+                parentEl = el.parentNode;
+            } else {
+                canvasEl = document.createElement('canvas');
+                parentEl = el;
+                parentEl.appendChild(canvasEl);
+            }
+            var ctx = canvasEl.getContext('2d');
+            canvasEl.width = w * dpr;
+            canvasEl.height = h * dpr;
+            ctx.scale(dpr, dpr);
+            parentEl.style.transform = 'scale('+ 1/dpr +', '+ 1/dpr + ')';
+            parentEl.style.transformOrigin = '0 0';
+            return ctx;
+        }
+  </script>
+</head>
+<body>
+  <canvas id="water" height="500" width="500"></canvas>
+  <script>
+    /**
+     * 利用y = Asin(Bx+c)+d正弦波函数计算点得位置
+    */
+    var canvasEl = document.getElementById('water');
+    var oheight = 500, owidth = 500;
+    var ctx = createAdaptCanvas({ el: canvasEl, baseW: owidth, baseH: oheight });
+    var points = [],
+      startX = 0, // 波浪起始横坐标
+      waveWidth = 0.05, // 波浪宽度，数值越小，宽度越宽
+      waveHeight = 10, // 波浪高度
+      offsetX = 0, // 波浪横向位移
+      speed = 0.02, // 波浪横向位移速度
+      isDrawCircle = false; // 是否画圆，是一个锁，避免多次画圆
+    var rangeValue = 0.6; // 水位数值
+    var nowRange = 0; // 初始水位
+
+    // 画波浪
+    function drawSin(offsetX, nowRange, fillColor) {
+      points = [];
+      ctx.beginPath();
+      ctx.fillStyle = fillColor;
+      ctx.lineWidth = 0;
+      ctx.strokeStyle = '#fff';
+      for (var x = startX; x < startX + owidth; x += 20 / owidth) {
+        // 正弦函数获取纵坐标
+        var y = waveHeight * Math.sin((startX + x)*waveWidth + offsetX);
+        // 保存当前点
+        points.push([x, oheight * (1-nowRange) + y]);
+        ctx.lineTo(x, oheight * (1-nowRange) + y);
+      }
+      ctx.lineTo(owidth, oheight);
+      ctx.lineTo(0, oheight);
+      ctx.lineTo(points[0][0], points[0][1]);
+      // ctx.stroke();
+      ctx.fill();
+    }
+
+    // 绘画
+    function draw() {
+      ctx.clearRect(0, 0, owidth, oheight);
+      if (!isDrawCircle) {
+        drawCircle2();
+      }
+      // 两个波浪，浪宽不一样，填充颜色不一样
+      waveWidth = 0.01;
+      drawSin(offsetX, nowRange, 'rgb(6,111,255)');
+      waveWidth = 0.02;
+      drawSin(offsetX, nowRange, 'rgb(0,15,255)');
+      // 初始水位到最终水位的变化
+      if (nowRange < rangeValue) {
+        nowRange += 0.01;
+      }
+      offsetX += speed;
+      // 递归绘画
+      requestAnimationFrame(draw);
+    }
+
+    // 画圆并裁剪
+    function drawCircle() {
+      var r = owidth / 2;
+      var lineWidth = 5;
+      // 园半径
+      var circleR = r - lineWidth;
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = '#ccc';
+      ctx.beginPath();
+      ctx.arc(r, r, circleR, 0, 2*Math.PI);
+      ctx.stroke();
+      ctx.clip();
+      isDrawCircle = true;
+    }
+
+    // 画椭圆并裁剪
+    function drawCircle2() {
+      var r = owidth / 2;
+      var lineWidth = 4;
+      // 园半径
+      var circleR = 100 - lineWidth;
+      var startPoint = [r-100, 100];
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = '#ccc';
+      ctx.beginPath();
+      ctx.arc(r, 100, circleR, -Math.PI, 0);
+      ctx.lineTo(r+100-lineWidth, 400);
+      ctx.arc(r, 400, circleR, 0, Math.PI);
+      ctx.lineTo(startPoint[0]+lineWidth, startPoint[1]);
+      ctx.stroke();
+      ctx.clip();
+      isDrawCircle = true;
+    }
+
+    // 开始绘画
+    requestAnimationFrame(draw);
+
+  </script>
+</body>
+</html>

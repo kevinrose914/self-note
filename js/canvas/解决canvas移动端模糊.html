@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #parent {
+            /* transform: scale(0.5, 0.5); */
+            transform-origin: 0 0;
+        }
+    </style>
+    <script>
+        
+;(function(win, lib) {
+    var doc = win.document;
+    var docEl = doc.documentElement;
+    var metaEl = doc.querySelector('meta[name="viewport"]');
+    var flexibleEl = doc.querySelector('meta[name="flexible"]');
+    var dpr = 0;
+    var scale = 0;
+    var tid;
+    var flexible = lib.flexible || (lib.flexible = {});
+
+    if (metaEl) {
+        console.warn('将根据已有的meta标签来设置缩放比例');
+        var match = metaEl.getAttribute('content').match(/initial\-scale=([\d\.]+)/);
+        if (match) {
+            scale = parseFloat(match[1]);
+            dpr = parseInt(1 / scale);
+        }
+    } else if (flexibleEl) {
+        var content = flexibleEl.getAttribute('content');
+        if (content) {
+            var initialDpr = content.match(/initial\-dpr=([\d\.]+)/);
+            var maximumDpr = content.match(/maximum\-dpr=([\d\.]+)/);
+            if (initialDpr) {
+                dpr = parseFloat(initialDpr[1]);
+                scale = parseFloat((1 / dpr).toFixed(2));
+            }
+            if (maximumDpr) {
+                dpr = parseFloat(maximumDpr[1]);
+                scale = parseFloat((1 / dpr).toFixed(2));
+            }
+        }
+    }
+
+    if (!dpr && !scale) {
+        var isAndroid = win.navigator.appVersion.match(/android/gi);
+        var isIPhone = win.navigator.appVersion.match(/iphone/gi);
+        var devicePixelRatio = win.devicePixelRatio;
+        if (isIPhone) {
+            // iOS下，对于2和3的屏，用2倍的方案，其余的用1倍方案
+            if (devicePixelRatio >= 3 && (!dpr || dpr >= 3)) {
+                dpr = 3;
+            } else if (devicePixelRatio >= 2 && (!dpr || dpr >= 2)){
+                dpr = 2;
+            } else {
+                dpr = 1;
+            }
+        } else {
+            // 其他设备下，仍旧使用1倍的方案
+            dpr = 1;
+        }
+        scale = 1 / dpr;
+    }
+
+    docEl.setAttribute('data-dpr', dpr);
+    if (!metaEl) {
+        metaEl = doc.createElement('meta');
+        metaEl.setAttribute('name', 'viewport');
+        metaEl.setAttribute('content', 'initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+        if (docEl.firstElementChild) {
+            docEl.firstElementChild.appendChild(metaEl);
+        } else {
+            var wrap = doc.createElement('div');
+            wrap.appendChild(metaEl);
+            doc.write(wrap.innerHTML);
+        }
+    }
+
+    function refreshRem(){
+        var width = docEl.getBoundingClientRect().width;
+        if (width / dpr > 540) {
+            width = 540 * dpr;
+        }
+        var rem = width / 10;
+        docEl.style.fontSize = rem + 'px';
+        flexible.rem = win.rem = rem;
+    }
+
+    win.addEventListener('resize', function() {
+        clearTimeout(tid);
+        tid = setTimeout(refreshRem, 300);
+    }, false);
+    win.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+            clearTimeout(tid);
+            tid = setTimeout(refreshRem, 300);
+        }
+    }, false);
+
+    if (doc.readyState === 'complete') {
+        doc.body.style.fontSize = 12 * dpr + 'px';
+    } else {
+        doc.addEventListener('DOMContentLoaded', function(e) {
+            doc.body.style.fontSize = 12 * dpr + 'px';
+        }, false);
+    }
+
+
+    refreshRem();
+
+    flexible.dpr = win.dpr = dpr;
+    flexible.refreshRem = refreshRem;
+    flexible.rem2px = function(d) {
+        var val = parseFloat(d) * this.rem;
+        if (typeof d === 'string' && d.match(/rem$/)) {
+            val += 'px';
+        }
+        return val;
+    }
+    flexible.px2rem = function(d) {
+        var val = parseFloat(d) / this.rem;
+        if (typeof d === 'string' && d.match(/px$/)) {
+            val += 'rem';
+        }
+        return val;
+    }
+
+})(window, window['lib'] || (window['lib'] = {}));
+
+    </script>
+</head>
+<body>
+    <div id="parent">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+        console.log(window.innerWidth);
+        var base = 180;
+        var dpr = window.devicePixelRatio;
+        var canvas = document.querySelector('#canvas');
+        var ctx = createAdaptCanvas({ el: canvas });
+        ctx.beginPath();
+        ctx.font = '12px normal';
+        ctx.fillStyle= "#999";
+        ctx.fillText("我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123我是不是模糊的123", 10, 20);
+        /**
+         * 解决canvas在移动端下模糊：
+         * 问题原因：
+         *  移动端下，由于屏幕dpr的原因，1像素在移动端是大于等于1像素，
+         *  故canvas绘制的像素在移动端处于放大状态，因而造成模糊
+         * 解决办法：
+         *  首先要理解canvas的width以及height，canvas有两套宽高，一个是元素本身大小，一个是绘画区域大小
+         *  html属性上的width/height和css上的width/height是有本质去别的
+         *  html属性上的width/height设置了后，相当于将canvas元素本身大小和绘画区域大小设置为等宽等高
+         *  css属性上的width/height设置后，相当于设置了canvas元素本身大小。
+         *  如果两套宽高不一致，将导致canvas绘画区域通过缩放，最终和canvas元素的宽高一直
+         * 
+         *  先根据dpr的大小，等比放大canvas绘画区域的宽高
+         *  再通过ctx.scale方法放大canvas里面的内容
+         *  最后将canvas所在元素或者父元素的css这是transform:scale(1/dpr, 1/dpr)将元素缩小，用于抵消第一步放大的效果
+        */
+
+        // 创建不模糊的自适应的canvas画布
+        function createAdaptCanvas({el, baseW, baseH}) {
+            var nodeName = el.nodeName.toLowerCase();
+            var canvasEl,
+                parentEl,
+                dpr = window.devicePixelRatio,
+                w = baseW || window.innerWidth || document.documentElement.clientWidth,
+                h = baseH || window.innerHeight || document.documentElement.clientHeight;
+            if (nodeName === 'canvas') {
+                canvasEl = el;
+                parentEl = el.parentNode;
+            } else {
+                canvasEl = document.createElement('canvas');
+                parentEl = el;
+                parentEl.appendChild(canvasEl);
+            }
+            var ctx = canvasEl.getContext('2d');
+            canvasEl.width = w * dpr;
+            canvasEl.height = h * dpr;
+            ctx.scale(dpr, dpr);
+            parentEl.style.transform = 'scale('+ 1/dpr +', '+ 1/dpr + ')';
+            parentEl.style.transformOrigin = '0 0';
+            return ctx;
+        }
+    </script>
+</body>
+</html>
