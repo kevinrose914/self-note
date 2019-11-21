@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="600" style="border: 1px solid #ccc;"></canvas>
+    <button id="btn">绘制</button>
+    <script>
+        function randomNumber(min, max) {
+            return parseInt(Math.random() * (max - min + 1) + min);
+        }
+    </script>
+    <script>
+        document.querySelector('#btn').addEventListener('click', function() {
+            draw7();
+        }, false);
+        var height = 600;
+        var width = 600;
+        var canvas = document.querySelector('#canvas');
+        var ctx = canvas.getContext('2d');
+
+        function draw1() {
+            ctx.clearRect(0, 0, 600, 600);
+            ctx.fillStyle = "rgb(200, 0, 0)";
+            ctx.strokeStyle = "red";
+            ctx.fillRect(30, 30, 100, 100);
+            ctx.clearRect(30, 30, 30, 30);
+        }
+
+        function draw2() {
+            ctx.lineWidth = 2;
+            ctx.fillStyle = "rgb(200, 0, 0)";
+            ctx.beginPath();
+            ctx.moveTo(30, 30);
+            ctx.lineTo(30, 100);
+            ctx.lineTo(100, 100);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+        }
+
+        function draw3() {
+            ctx.beginPath();
+            ctx.arc(width/2, height/2, 100, 0, Math.PI/4, false);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function draw4() {
+            ctx.beginPath();
+            ctx.moveTo(50, 50);
+            ctx.arcTo(100, 50, 100, 100, 50);
+            ctx.lineTo(100, 100);
+            ctx.stroke();
+        }
+
+        function draw5() {
+            ctx.beginPath();
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 10; j++) {
+                    ctx.strokeWidth = 2;
+                    ctx.strokeStyle = `rgb(${randomNumber(0, 255)}, ${randomNumber(0, 255)}, ${randomNumber(0, 255)})`;
+                    ctx.strokeRect(j * 60, i*60, 50, 50);
+                }
+            }
+        }
+
+        var offset = 0;
+        function draw6() {
+            offset += 0.5;
+            if (offset > 24) {
+                offset = 0;
+            }
+            requestAnimationFrame(draw6);
+            ctx.clearRect(20, 20, 120, 220);
+            ctx.strokeStyle=2;
+            // ctx.beginPath();
+            ctx.setLineDash([20, 5]);
+            ctx.lineDashOffset = offset;
+            ctx.strokeRect(30, 30, 100, 200);
+        }
+
+        function draw7() {
+            ctx.font="60px UNKNOW";
+            ctx.fillStyle = 'red';
+            ctx.fillRect(300, 200, 2, 2);
+            ctx.fillRect(300, 300, 2, 2);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('还有谁', 300, 200);
+            ctx.strokeText('还有谁', 300, 300);
+        }
+    </script>
+</body>
+</html>
