@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=0.5"> -->
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>d3-01</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script src="./flexible.js"></script>
+  <script>
+    function createAdaptCanvas({el, baseW, baseH}) {
+            var nodeName = el.nodeName.toLowerCase();
+            var canvasEl,
+                parentEl,
+                dpr = window.devicePixelRatio,
+                w = baseW || window.innerWidth || document.documentElement.clientWidth,
+                h = baseH || window.innerHeight || document.documentElement.clientHeight;
+            if (nodeName === 'canvas') {
+                canvasEl = el;
+                parentEl = el.parentNode;
+            } else {
+                canvasEl = document.createElement('canvas');
+                parentEl = el;
+                parentEl.appendChild(canvasEl);
+            }
+            var ctx = canvasEl.getContext('2d');
+            canvasEl.width = w * dpr;
+            canvasEl.height = h * dpr;
+            ctx.scale(dpr, dpr);
+            parentEl.style.transform = 'scale('+ 1/dpr +', '+ 1/dpr + ')';
+            parentEl.style.transformOrigin = '0 0';
+            return ctx;
+        }
+  </script>
+  <script src="https://unpkg.com/d3@5.9.2/dist/d3.min.js"></script>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    var ctx = createAdaptCanvas({
+      el: document.querySelector('#canvas')
+    });
+    var canvas = ctx.canvas;
+    var w = canvas.width,
+      h = canvas.height,
+      radius = 30,
+      dpr = window.devicePixelRatio;
+    // 初始化计算各个原型的坐标
+    var circles = d3.range(10).map(i => {
+      return {
+        x: ctx.canvas.width * Math.random() / dpr + radius * 2,
+        y: ctx.canvas.height * Math.random() / dpr + 2 * radius,
+        color: d3.schemeCategory10[i % 10]
+      };
+    });
+    console.log(circles);
+    // render
+    function render() {
+      ctx.clearRect(0, 0, w, h);
+      circles.forEach(item => {
+        ctx.beginPath();
+        // ctx.moveTo(item.x + radius, item.y);
+        ctx.arc(item.x, item.y, radius, 0, 2*Math.PI);
+        ctx.fillStyle = item.color;
+        ctx.fill();
+        if (item.active) {
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+    }
+    render();
+
+    // drag
+    d3.select(canvas).call(drag(circles).on('start.render drag.render end.render', render))
+    function drag(circles) {
+      function dragSubject() {
+        let subject = null;
+        let distance = 40;
+        // 查询到底拖拽的是哪一个
+        for (const c of circles) {
+          let d = Math.hypot(d3.event.x - c.x, d3.event.y - c.y);
+          if (d < distance) {
+            distance = d;
+            subject = c;
+          }
+        }
+        return subject;
+      }
+      function dragStart() {
+        console.log(d3.event.subject)
+        circles.splice(circles.indexOf(d3.event.subject), 1);
+        circles.push(d3.event.subject);
+        d3.event.subject.active = true;
+      }
+      function dragged() {
+        d3.event.subject.x = d3.event.x;
+        d3.event.subject.y = d3.event.y;
+      }
+      function dragended() {
+        d3.event.subject.active = false;
+      }
+      return d3.drag().subject(dragSubject).on('start', dragStart).on('drag', dragged).on('end', dragended);
+    }
+  </script>
+</body>
+</html>
