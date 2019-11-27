@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 优先级队列
+        // 插入元素的时候根据优先级进行插入，其他的都与队列相同
+        // 运用场景: 登机顺序、急诊科室
+    </script>
+    <script>
+        // 封装队列元素
+        function QueueElement(el, priority) {
+            this.el = el;
+            this.priority = priority;
+        }
+        // 优先级队列
+        function PriorityQueue() {
+            this.items = [];
+        }
+        PriorityQueue.prototype.enqueue = function(el, priority) {
+            var queueElement = new QueueElement(el, priority);
+            if (this.items.length === 0) {
+                this.items.push(queueElement);
+                return;
+            }
+            var temp, next;
+            for (let i = 0; i < this.items.length; i++) {
+                temp = this.items[i];
+                next = this.items[i+1];
+                if (temp.priority <= priority) {
+                    this.items.splice(i, 0, queueElement);
+                    break;
+                } else if (!next) {
+                    this.items.push(queueElement);
+                    break;
+                }
+            }
+        }
+        // 删除
+        PriorityQueue.prototype.dequeue = function() {
+            return this.items.shift(); // 性能比较低
+        }
+        // 返回队列中第一个元素
+        PriorityQueue.prototype.front = function() {
+            return this.items[0];
+        }
+        // 判空
+        PriorityQueue.prototype.isEmpty = function() {
+            return this.items.length === 0;
+        }
+        // 返回队列的长度
+        PriorityQueue.prototype.size = function() {
+            return this.items.length;
+        }
+        // 转字符串
+        PriorityQueue.prototype.toString = function() {
+
+        }
+
+        var pg = new PriorityQueue();
+        pg.enqueue('大卡车', 100);
+        pg.enqueue('轿车', 90);
+        pg.enqueue('客车', 95);
+        pg.enqueue('客车2', 95);
+        pg.enqueue('摩托车', 50);
+        pg.enqueue('拖拉机', 60);
+        console.log(pg);
+    </script>
+</body>
+</html>

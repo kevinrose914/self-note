@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 双向链表
+        // 节点有指向两边节点的引用，而不只是单方向的引用
+    </script>
+    <script>
+        // 节点类
+        function Node(data) {
+            this.data = data;
+            this.next = null; // 指向后一个节点的指针
+            this.prev = null; // 指向前一个节点的指针
+        }
+        // 双向链表类
+        function DoublyLinkedList() {
+            this.head = null; // 指向第一个节点的指针
+            this.tail = null; // 指向最后一个节点的指针
+            this.length = 0;
+        }
+        DoublyLinkedList.prototype.append = function(el) {
+            var node = new Node(el);
+            if (this.length === 0) {
+                this.head = node;
+                this.tail = node;
+            } else {
+                node.prev = this.tail;
+                this.tail.next = node;
+                this.tail = node;
+            }
+            this.length += 1;
+        }
+        DoublyLinkedList.prototype.insert = function(position, el) {
+            // 1. 边界判断
+            if (position < 0 || position > this.length) {
+                return;
+            }
+            var node = new Node(el);
+            // 2. 为空时，在首位加
+            if (this.length === 0) {
+                this.head = node;
+                this.tail = node;
+                this.length += 1;
+                return;
+            }
+            // 3. 不为空时，在首位加
+            if (position === 0) {
+                this.head.prev = node;
+                node.next = this.head;
+                this.head = node;
+                this.length += 1;
+                return;
+            }
+            // 4. 在末尾加
+            if (position === this.length) {
+                this.tail.next = node;
+                node.prev = this.tail;
+                this.tail = node;
+                this.length += 1;
+                return;
+            }
+            // 5. 在中间任意位置加
+            var current = this.head, index = 0;
+            while(current && index < position) {
+                current = current.next;
+                index += 1;
+            }
+            current.prev.next = node;
+            node.prev = current.prev;
+            current.prev = node;
+            node.next = current;
+            this.length += 1;
+        }
+        DoublyLinkedList.prototype.get = function(position) {
+            // 1. 边界判断
+            if (position < 0 || position >= this.length) {
+                return null;
+            }
+            // 2. 判断是从左往右，还是从右往左，哪个快，用哪个
+            var isFromTail = position > Math.floor(this.length / 2);
+            var current = isFromTail ? this.tail : this.head, index = 0;
+            // 3. 如果是从右往左，position相应要反过来
+            position = isFromTail ? this.length - position - 1 : position;
+            while(index < position) {
+                current = isFromTail ? current.prev : current.next;
+                index += 1;
+            }
+            return current.data;
+        }
+        DoublyLinkedList.prototype.indexOf = function() {
+
+        }
+        DoublyLinkedList.prototype.update = function() {
+
+        }
+        DoublyLinkedList.prototype.removeAt = function() {
+
+        }
+        DoublyLinkedList.prototype.remove = function() {
+
+        }
+        DoublyLinkedList.prototype.isEmpty = function() {
+
+        }
+        DoublyLinkedList.prototype.size = function() {
+
+        }
+        DoublyLinkedList.prototype.toString = function() {
+            return this.backwardString();
+        }
+        // 返回正向遍历的节点字符串
+        DoublyLinkedList.prototype.forwardString = function() {
+            var current = this.tail;
+            var listString = '';
+            while(current) {
+                listString += current.data + " ";
+                current = current.prev;
+            }
+            return listString;
+        }
+        // 返回反向遍历的节点字符串
+        DoublyLinkedList.prototype.backwardString = function() {
+            var current = this.head;
+            var listString = '';
+            while(current) {
+                listString += current.data + " ";
+                current = current.next;
+            }
+            return listString;
+        }
+
+        var db = new DoublyLinkedList();
+        db.append('qwer0');
+        db.append('qwer1');
+        db.append('qwer2');
+        db.append('qwer3');
+        console.log(db.toString());
+        db.insert(4, 'qwer4');
+        console.log(db.toString());
+        console.log(db.get(0));
+    </script>
+</body>
+</html>

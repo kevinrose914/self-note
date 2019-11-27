@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <svg width="800" height="600" version="1.1"
+xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M0,0H20V20" stroke="#333" fill="none"></path>
+            </pattern>
+        </defs>
+        <rect width="800" height="600" fill="url(#grid)"></rect>
+        <path d="M0,0V600H800" fill="none" stroke="#333"></path>
+        <text id="animate-text" x="100" y="100" style="display:none">妈的还有谁？</text>
+    </svg>
+    <script>
+        var textEl = document.querySelector('#animate-text');
+        textEl.setAttribute('dx', '0');
+        textEl.setAttribute('dy', '20 20 20 20 20');
+        var startY = 20;
+        function render() {
+            if (startY <= 0) {
+                return;
+            }
+            startY = startY >= 0.5 ? startY - 0.5 : 0;
+            textEl.setAttribute('dy', `${startY} ${startY} ${startY} ${startY} ${startY}`);
+            requestAnimationFrame(render);
+        }
+        textEl.style.display="block";
+        render();
+    </script>
+</body>
+</html>

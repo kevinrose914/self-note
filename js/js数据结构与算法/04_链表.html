@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 节点类
+        function Node(data, next) {
+            this.data = data;
+            this.next = next || null;
+        }
+        // 链表类
+        function LinkedList() {
+            this.head = null;
+            this.length = 0; // 记录列表的长度
+        }
+        // 追加元素
+        LinkedList.prototype.append = function(el) {
+            var node = new Node(el);
+            if (this.length === 0) { // 是第一个节点
+                this.head = node;
+            } else {
+                // 链式查找，直到找到next指向null的元素，也就是最后一个元素
+                var current = this.head;
+                while(current.next) {
+                    current = current.next;
+                }
+                // 最后一个节点的next指向新元素
+                current.next = node;
+            }
+            this.length += 1;
+        }
+        // 插入
+        LinkedList.prototype.insert = function(position, el) {
+            // 对position越界判断
+            if (position < 0) {
+                return false;
+            }
+            var node = new Node(el);
+            var current = this.head;
+            var index = 0, parent;
+            if (position === 0) { // 在第0个位置插入
+                node.next = this.head;
+                this.head = node;
+            } else if (position >= this.length) { // 在大于等于最后一个位置插入
+                while(current.next) {
+                    current = current.next;
+                }
+                current.next = node;
+            } else { // 在中间某个位置插入
+                while(current && index < position) {
+                    parent = current;
+                    current = current.next;
+                    index += 1;
+                }
+                node.next = current;
+                parent.next = node;
+            }
+            this.length += 1;
+            return true;
+        }
+        // 获取
+        LinkedList.prototype.get = function(position) {
+            if (position < 0 || position >= this.length) {
+                return null;
+            }
+            var current = this.head, index = 0;
+            while(current && index < position) {
+                current = current.next;
+                index += 1;
+            }
+            return current.data;
+        }
+        // 返回索引
+        LinkedList.prototype.indexOf = function(el) {
+            var current = this.head, index = 0;
+            while(current) {
+                if (current.data === el) {
+                    return index;
+                }
+                current = current.next;
+                index += 1;
+            }
+            return -1;
+        }
+        // 修改
+        LinkedList.prototype.update = function(position, el) {
+            if (position < 0 || position >= this.length) {
+                return;
+            }
+            var current = this.head, index = 0, parent;
+            while(current && index < position) {
+                parent = current;
+                current = current.next;
+                index += 1;
+            }
+            if (!current) {
+                return;
+            }
+            var node = new Node(el);
+            node.next = current.next;
+            current = node;
+            parent.next = node;
+        }
+        // 按位置移除
+        LinkedList.prototype.removeAt = function(position) {
+            if (position < 0 || position >= this.length) {
+                return;
+            }
+            if (position === 0) {
+                this.head = this.head.next;
+                return;
+            }
+            var current = this.head, index = 0, parent;
+            while(index < position) {
+                parent = current;
+                current = current.next;
+                index += 1;
+            }
+            parent.next = current.next;
+            this.length -= 1;
+        }
+        // 按元素删除
+        LinkedList.prototype.remove = function(el) {
+            var current = this.head, parent, index = 0;
+            while(current && current.data !== el) {
+                parent = current;
+                current = current.next;
+                index += 1;
+            }
+            if (!current) {
+                return;
+            }
+            if (index === 0) {
+                this.head = this.head.next;
+                return;
+            }
+            parent.next = current.next;
+            this.length -= 1;
+        }
+        LinkedList.prototype.isEmpty = function() {
+            return this.length === 0;
+        }
+        LinkedList.prototype.size = function() {
+            return this.length;
+        }
+        LinkedList.prototype.toString = function() {
+            var current = this.head;
+            var listString = '';
+            while(current) {
+                listString += current.data + " ";
+                current = current.next;
+            }
+            return listString;
+        }
+
+        var link = new LinkedList();
+        link.append('hahhaa');
+        link.append('123');
+        link.append('456457');
+        link.insert(2, '11111');
+        console.log(link.toString());
+        console.log(link.get(0));
+        console.log(link.indexOf('123'));
+        console.log(link.update(4, '1234'));
+        console.log(link.toString());
+        // link.removeAt(2);
+        // console.log(link.toString());
+        // link.remove('hahhaa');
+        // console.log(link.toString());
+    </script>
+    <script>
+        // 链表
+        // 
+    </script>
+</body>
+</html>
