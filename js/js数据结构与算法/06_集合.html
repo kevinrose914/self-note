@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>集合</title>
+</head>
+<body>
+    <script>
+        // 集合:一组无序、不能重复的元素构成
+        // 可以看作特殊数组，但不能通过下标进行方位
+        // 相当于es6的Set类
+    </script>
+    <script>
+        // 封装集合类
+        function Set() {
+            // 属性
+            this.items = {};
+        }
+        // 添加元素
+        Set.prototype.add = function(value) {
+            // 判断当前集合中是否已经包含该元素
+            if (this.has(value)) {
+                return false;
+            }
+            this.items[value] = value;
+            return true;
+        }
+        // 移除元素
+        Set.prototype.remove = function(value) {
+            if (!this.has(value)) {
+                return false;
+            }
+            delete this.items[value];
+            return true;
+        }
+        // 查询元素是否存在
+        Set.prototype.has = function(value) {
+            return this.items.hasOwnProperty(value);
+        }
+        // 清空集合
+        Set.prototype.clear = function() {
+            this.items = {};
+        }
+        // 返回集合元素的数量
+        Set.prototype.size = function() {
+            return Object.keys(this.items).length;
+        }
+        // 返回集合中所有值的数组
+        Set.prototype.values = function() {
+            return Object.keys(this.items);
+        }
+        // 集合间的操作：并集、交集、差集、子集
+        // 并集
+        Set.prototype.union = function(otherSet) {
+            var unionSet = new Set();
+            var values = this.values();
+            for (var j = 0; j < values.length; j++) {
+                unionSet.add(values[j]);
+            }
+            values = otherSet.values();
+            for (var i = 0; i < values.length; i++) {
+                unionSet.add(values[i]);
+            }
+            return unionSet;
+        }
+        // 交集
+        Set.prototype.intersection = function(otherSet) {
+            var set = new Set();
+            var values = this.values();
+            for (var j = 0; j < values.length; j++) {
+                var current = values[j];
+                if (otherSet.has(current)) {
+                    set.add(values[j]);
+                }
+            }
+            return set;
+        }
+        // 差集
+        Set.prototype.union3 = function(otherSet) {
+            var set = new Set();
+            var values = this.values();
+            for (var j = 0; j < values.length; j++) {
+                var current = values[j];
+                if (!otherSet.has(current)) {
+                    set.add(values[j]);
+                }
+            }
+            return set;
+        }
+        // 子集
+        Set.prototype.union4 = function(otherSet) {
+            var set = new Set();
+            var values = this.values();
+            var thisIsOtherChild = true;
+            for (var j = 0; j < values.length; j++) {
+                var current = values[j];
+                if (!otherSet.has(current)) {
+                    thisIsOtherChild = false;
+                    break;
+                }
+            }
+            return thisIsOtherChild;
+        }
+
+
+        // 测试
+        var set = new Set();
+        set.add('a');
+        set.add('b');
+        set.add('c');
+        set.add('d');
+        console.log(set, set.size(), set.values());
+        var set2 = new Set();
+        set2.add('a');
+        set2.add('b');
+        set2.add('e');
+        set2.add('f');
+        console.log(set.union4(set2));
+
+
+        
+    </script>
+</body>
+</html>
