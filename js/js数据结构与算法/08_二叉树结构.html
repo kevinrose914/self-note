@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>二叉树结构</title>
+</head>
+<body>
+    <script>
+        // 二叉树结构：每个节点最多只有两个子节点
+        // 任何树结构都可以转成二叉树
+        // 一个二叉树第i层的最大节点树：2^(i-1). i>= 1
+        // 深度为k的二叉树有最大节点数：2^k-1，k>=1
+        // 二叉树的存储常见方式为：数组和链表,数组一般用来存储完全二叉树
+
+        // 二叉搜索树(BST)：二叉排序树、二叉查找树
+        /** 
+         * 满足二叉搜索树的条件：
+         * 1.非空左子树的所有键值小于根节点的键值；
+         * 2.非空右子树的所有键值大于其根节点的键值
+         * 3.左右子树本身也都是二叉搜索树
+        **/
+    </script>
+    <script>
+        // 节点类
+        function Node(key, value) {
+            this.key = key;
+            this.value = value;
+            this.right = null;
+            this.left = null;
+        }
+        // 二叉搜索树类
+        function BinarySearchTree() {
+            this.root = null;
+        }
+        // 插入新的节点
+        BinarySearchTree.prototype.insert = function(key, value) {
+            // 1.创建节点
+            var node = new Node(key, value);
+            if (this.root) { // 2.有根节点
+                this.insertNode(this.root, node);
+            } else { // 3. 没有根节点
+                this.root = node;
+            }
+        }
+        BinarySearchTree.prototype.insertNode = function(node, newNode) {
+            if (node.key > newNode.key) { // 1.向左查找
+                var left = node.left;
+                if (left) {
+                    this.insertNode(left, newNode);
+                } else {
+                    node.left = newNode;
+                }
+            } else { // 2.向右查找
+                var right = node.right;
+                if (right) {
+                    this.insertNode(right, newNode);
+                } else {
+                    node.right = newNode;
+                }
+            }
+        }
+        // 搜索节点
+        BinarySearchTree.prototype.search = function(key) {
+
+        }
+        // 通过中序遍历方式遍历所有节点
+        // 1. 遍历其左子树
+        // 2. 访问根节点
+        // 3. 遍历其右子树
+        BinarySearchTree.prototype.inOrderTraverse = function(handler) {
+            this.inOrderTraverseNode(this.root, handler);
+        }
+        BinarySearchTree.prototype.inOrderTraverseNode = function(node, handler) {
+            if (node) {
+                // 递归到最深的左叶子节点
+                this.inOrderTraverseNode(node.left, handler);
+                handler(node.key);
+                // 递归到最深的右叶子节点
+                this.inOrderTraverseNode(node.right, handler);
+            }
+        }
+        // 通过先序遍历方式遍历所有节点
+        // 1. 访问根节点
+        // 2. 遍历其左子树
+        // 3. 遍历其右子树
+        BinarySearchTree.prototype.preOrderTraversal = function(handler) {
+            this.preOrderTraversalNode(this.root, handler);
+        }
+        BinarySearchTree.prototype.preOrderTraversalNode = function(node, handler) {
+            if (node) {
+                handler(node.key);
+                // 处理左子节点
+                this.preOrderTraversalNode(node.left, handler);
+                // 处理右子节点
+                this.preOrderTraversalNode(node.right, handler);
+            }
+        }
+        // 通过后序遍历方式遍历所有节点
+        // 1. 遍历其左子树
+        // 2. 遍历其右子树
+        // 3. 访问根节点
+        BinarySearchTree.prototype.postOrderTraverse = function(handler) {
+            this.postOrderTraverseNode(this.root, handler);
+        }
+        BinarySearchTree.prototype.postOrderTraverseNode = function(node, handler) {
+            if (node) {
+                // 处理左子节点
+                this.postOrderTraverseNode(node.left, handler);
+                // 处理右子节点
+                this.postOrderTraverseNode(node.right, handler);
+                handler(node.key);
+            }
+        }
+        // 返回树中最小的值/键
+        BinarySearchTree.prototype.min = function() {
+            if (!this.root) {
+                return null;
+            }
+            // 一直往左找
+            var node = this.root;
+            while(node.left) {
+                node = node.left;
+            }
+            return node.key;
+        }
+        // 返回树中最大的值/键
+        BinarySearchTree.prototype.max = function() {
+            if (!this.root) {
+                return null;
+            }
+            // 一直往右找
+            var node = this.root;
+            while(node.right) {
+                node = node.right;
+            }
+            return node.key;
+        }
+        // 移除某个节点
+        BinarySearchTree.prototype.remove = function(key) {
+
+        }
+
+        
+        // 测试
+        var bst = new BinarySearchTree();
+        bst.insert(11, '11');
+        bst.insert(7, '7');
+        bst.insert(15, '15');
+        bst.insert(5, '5');
+        bst.insert(3, '3');
+        bst.insert(8, '8');
+        bst.insert(6, '6');
+        console.log(bst);
+        var str = '';
+        bst.preOrderTraversal(function(key) {
+            str += ` ${key}`;
+        });
+        console.log('str:', str);
+        var str2 = '';
+        bst.inOrderTraverse(function(key) {
+            str2 += ` ${key}`;
+        });
+        console.log('str2:', str2);
+        var str3 = '';
+        bst.postOrderTraverse(function(key) {
+            str3 += ` ${key}`;
+        });
+        console.log('str3:', str3);
+        console.log('max:', bst.max());
+        console.log('min:', bst.min());
+    </script>
+</body>
+</html>
