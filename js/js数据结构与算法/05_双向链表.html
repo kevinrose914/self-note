@@ -93,23 +93,157 @@
             }
             return current.data;
         }
-        DoublyLinkedList.prototype.indexOf = function() {
-
+        DoublyLinkedList.prototype.indexOf = function(el) {
+            var current = this.head, index = 0;
+            while(current && current.data !== el) {
+                current = current.next;
+                index += 1;
+            }
+            // 如果没找到，就返回-1
+            if (!current) {
+                return -1;
+            }
+            return index;
         }
-        DoublyLinkedList.prototype.update = function() {
-
+        DoublyLinkedList.prototype.update = function(position, el) {
+            // 1.下标边界判断
+            if (position < 0 || position >= this.length) return;
+            var node = new Node(el);
+            // 2.如果是更新第一位
+            if (position === 0) {
+                this.head.next.prev = node;
+                node.next = this.head.next;
+                this.head = node;
+                return;
+            }
+            // 3. 如果是更新最后一位
+            if (position === this.length - 1) {
+                node.prev = this.tail.prev;
+                this.tail.prev.next = node;
+                this.tail = node;
+                return;
+            }
+            // 4. 如果是更新中间任意位置
+            var isFromTail = position > Math.floor(this.length / 2);
+            var current = isFromTail ? this.tail : this.head,
+                index = isFromTail ? this.length-1 : 0,
+                parent;
+            while(isFromTail ? index > position : index < position) {
+                if (!isFromTail) {
+                    parent = current;
+                }
+                current = isFromTail ? current.prev : current.next;
+                if (isFromTail) {
+                    parent = current.prev;
+                }
+                if (isFromTail) {
+                    index -= 1;
+                } else {
+                    index += 1;
+                }
+            }
+            parent.next = node;
+            node.prev = parent;
+            current.next.prev = node;
+            node.next = current.next;
         }
-        DoublyLinkedList.prototype.removeAt = function() {
-
+        DoublyLinkedList.prototype.removeAt = function(position) {
+            // 1.边界判断
+            if (position < 0 || position >= this.length) return null;
+            var current;
+            // 如果只有一位
+            if (this.length === 1) {
+                current = this.head;
+                this.tail = null;
+                this.head = null;
+                this.length -= 1;
+                return current.data;
+            }
+            // 2.删除首位
+            if (position === 0) {
+                current = this.head;
+                this.head = this.head.next;
+                this.head.prev = null;
+                this.length -= 1;
+                return current.data;
+            }
+            // 3.删除最后一位
+            if (position === this.length - 1) {
+                current = this.tail;
+                this.tail = this.tail.prev;
+                this.tail.next = null;
+                this.length -= 1;
+                return current.data;
+            }
+            // 4.删除中间任意一个位置的元素
+            var isFromTail = position > Math.floor(this.length / 2);
+            var index = isFromTail ? this.length-1 : 0;
+            var parent;
+            current = isFromTail ? this.tail : this.head;
+            while(isFromTail ? index > position : index < position) {
+                if (!isFromTail) {
+                    parent = current;
+                }
+                current = isFromTail ? current.prev : current.next;
+                if (isFromTail) {
+                    parent = current.prev;
+                }
+                if (isFromTail) {
+                    index -= 1;
+                } else {
+                    index += 1;
+                }
+            }
+            parent.next = current.next;
+            current.next.prev = parent;
+            this.length -= 1;
+            return current.data;
         }
-        DoublyLinkedList.prototype.remove = function() {
-
+        DoublyLinkedList.prototype.remove = function(el) {
+            // 没有元素，直接return
+            if (this.length === 0) return;
+            var current = this.head, index = 0, parent;
+            while(current && current.data !== el) {
+                parent = current;
+                current = current.next;
+                index += 1;
+            }
+            // 1.如果没找到任何元素
+            if (!current) {
+                return null;
+            }
+            // 2.如果只有一个元素
+            if (this.length === 1) {
+                this.head = null;
+                this.tail = null;
+                this.length -= 1;
+                return current.data;
+            }
+            // 3.如果删除的元素在首位
+            if (index === 0) {
+                this.head = this.head.next;
+                this.head.next.prev = null;
+                this.length -= 1;
+                return current.data;
+            }
+            // 4.如果删除的元素在最后一位
+            if (index === this.length - 1) {
+                this.tail = this.tail.prev;
+                this.tail.next = null;
+                this.length -= 1;
+                return current.data;
+            }
+            // 5.如果删除的元素位于中间任意的位置
+            parent.next = current.next;
+            current.next.prev = parent;
+            this.length -= 1;
+            return current.data;
         }
         DoublyLinkedList.prototype.isEmpty = function() {
-
+            return this.length === 0;
         }
         DoublyLinkedList.prototype.size = function() {
-
+            return this.length;
         }
         DoublyLinkedList.prototype.toString = function() {
             return this.backwardString();
@@ -144,6 +278,13 @@
         db.insert(4, 'qwer4');
         console.log(db.toString());
         console.log(db.get(0));
+        console.log(db.indexOf('qwer'));
+        db.update(0, 'aaaaa');
+        console.log(db.toString());
+        // console.log(db.removeAt(3));
+        // console.log(db.toString());
+        console.log(db.remove('qwer4'));
+        console.log(db.toString());
     </script>
 </body>
 </html>
