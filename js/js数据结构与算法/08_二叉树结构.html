@@ -21,6 +21,8 @@
          * 2.非空右子树的所有键值大于其根节点的键值
          * 3.左右子树本身也都是二叉搜索树
         **/
+
+        // 平衡二叉树，不平衡二叉树（插入连续key的数据）
     </script>
     <script>
         // 节点类
@@ -63,7 +65,15 @@
         }
         // 搜索节点
         BinarySearchTree.prototype.search = function(key) {
-
+            var current = this.root;
+            while(current && current.key !== key) {
+                if (current.key > key) { // 2.向左查找
+                    current = current.left;
+                } else { // 向右查找
+                    current = current.right;
+                }
+            }
+            return current;
         }
         // 通过中序遍历方式遍历所有节点
         // 1. 遍历其左子树
@@ -139,37 +149,152 @@
         }
         // 移除某个节点
         BinarySearchTree.prototype.remove = function(key) {
+            // 1.先查找要删除的节点
+            var current = this.root, // 1.1当前节点
+                parent, // 1.2当前节点的父节点
+                isLeftNode; // 1.3当前节点是否是其父节点的左子节点
+            while(current && current.key !== key) {
+                parent = current;
+                if (current.key > key) {
+                    isLeftNode = true;
+                    current = current.left;
+                } else {
+                    isLeftNode = false;
+                    current = current.right;
+                }
+            }
+            // 2.没找到要删除的节点
+            if (!current) {
+                return;
+            }
+            // 3.找到了要删除的节点
+            if (!current.left && !current.right) { // 3.1删除的节点是叶子节点
+                if (!parent) { // 3.1.1删除的节点既是根节点又是叶子节点
+                    this.root = null;
+                } else if (isLeftNode) { // 3.1.2删除的节点是其父节点的左子节点
+                    parent.left = null;
+                } else { // 3.1.3删除的节点是其父节点的右子节点
+                    parent.right = null;
+                }
+            } else if ((!current.left && current.right) || (current.left && !current.right)) { // 3.2删除的节点是只含有一个子节点的节点
+                if (!parent) { // 3.2.1删除的节点是根节点
+                    this.root = current.left || current.right;
+                } else if (isLeftNode) { // 3.2.2删除的节点是其父节点的左子节点
+                    parent.left = current.left || current.right;
+                } else { // 3.2.3删除的节点是其父节点的右子节点
+                    parent.right = current.left || current.right;
+                }
+            } else if (current.left && current.right) { // 4.1删除的节点拥有左右两个子节点,找节点的前驱或者后继，这里找后继
+                // var succssor = this.getSuccssor(current);
+                // if (!parent) { // 判断删除节点是否为跟节点
+                //     this.root = succssor;
+                // } else if (isLeftNode) {
+                //     parent.left = succssor;
+                // } else {
+                //     parent.right = succssor;
+                // }
+                // 将删除节点的左子树赋值给后继节点的左子树
+                // succssor.left = current.left;
+                var precursor = this.getPrecursor(current);
+                if (!parent) {
+                    this.root = precursor;
+                } else if (isLeftNode) {
+                    parent.left = precursor;
+                } else {
+                    parent.right = precursor;
+                }
+                // 将删除节点的右子树赋值给前驱节点的右子树
+                precursor.right = current.right;
+            }
+        }
+        // 找后继的方法
+        BinarySearchTree.prototype.getSuccssor = function(delNode) {
+            // 查找后继:在需要删除的节点的右子树里面查找最小的key
+            // 后继节点有一种特殊情况：后继节点直接就是删除节点的右子节点
+            // 注意：除了特殊情况外，后继肯定是其父节点的左子节点，并且后继肯定没有左子节点
+            var succssor = delNode; // 后继节点
+            var current = delNode.right; // 当前需要删除的节点的右子树，用于循环
+            var succssorParent; // 后继节点的父节点
+            while(current) {
+                succssorParent = succssor;
+                succssor = current;
+                current = current.left;
+            }
 
+            // 判断寻找的后继节点是否直接就是delNode的right节点，如果不是，需要处理下面的情况
+            if (succssor.key !== delNode.right.key) {
+                // 将后继节点从他的位置移除
+                succssorParent.left = succssor.right;
+                // 将后继几点的right属性更改为删除节点的right属性
+                succssor.right = delNode.right;
+            }
+            return succssor;
+        }
+        // 找前驱的方法
+        BinarySearchTree.prototype.getPrecursor = function(delNode) {
+            // 前驱：在删除节点的左子树中查找key最大的那个
+            // 特殊情况：前驱直接就是删除节点的左子树
+            // 除开特殊情况，前驱必定没有右子节点，且前驱必定是其父节点的右子节点
+            var precursor = delNode; // 前驱
+            var current = delNode.left; // 用于循环
+            var precursorParent; // 前驱的父节点
+
+            while(current) {
+                precursorParent = precursor;
+                precursor = current;
+                current = current.right;
+            }
+
+            // 前驱不是删除节点的左子节点
+            if (precursor.key !== delNode.left.key) {
+                // 将前驱从其位置中删除
+                precursorParent.right = precursor.left;
+                // 将删除节点的右子树赋值给前驱的右子树
+                precursor.left = delNode.left;
+            }
+
+            return precursor;
         }
 
         
         // 测试
         var bst = new BinarySearchTree();
-        bst.insert(11, '11');
-        bst.insert(7, '7');
         bst.insert(15, '15');
-        bst.insert(5, '5');
-        bst.insert(3, '3');
-        bst.insert(8, '8');
-        bst.insert(6, '6');
+        bst.insert(10, '10');
+        bst.insert(20, '20');
+        // bst.insert(13, '13');
+        // bst.insert(6, '6');
+        // bst.insert(7, '7');
+        // bst.insert(3, '3');
+        // bst.insert(14, '14');
+        // bst.insert(12, '12');
+        // bst.insert(11, '11');
+        // bst.insert(18, '18');
+        // bst.insert(24, '24');
+        // bst.insert(25, '25');
+        // bst.insert(22, '22');
+        // bst.insert(23, '23');
         console.log(bst);
-        var str = '';
-        bst.preOrderTraversal(function(key) {
-            str += ` ${key}`;
-        });
-        console.log('str:', str);
-        var str2 = '';
-        bst.inOrderTraverse(function(key) {
-            str2 += ` ${key}`;
-        });
-        console.log('str2:', str2);
-        var str3 = '';
-        bst.postOrderTraverse(function(key) {
-            str3 += ` ${key}`;
-        });
-        console.log('str3:', str3);
-        console.log('max:', bst.max());
-        console.log('min:', bst.min());
+        // var str = '';
+        // bst.preOrderTraversal(function(key) {
+        //     str += ` ${key}`;
+        // });
+        // console.log('str:', str);
+        // var str2 = '';
+        // bst.inOrderTraverse(function(key) {
+        //     str2 += ` ${key}`;
+        // });
+        // console.log('str2:', str2);
+        // var str3 = '';
+        // bst.postOrderTraverse(function(key) {
+        //     str3 += ` ${key}`;
+        // });
+        // console.log('str3:', str3);
+        // console.log('max:', bst.max());
+        // console.log('min:', bst.min());
+        // console.log(bst.search(12));
+        bst.remove(15);
+        console.log(bst);
     </script>
 </body>
 </html>
