@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图论</title>
+</head>
+<body>
+    <script>
+        /**
+         * 图通常的特点：
+         * 1.一组顶点：通常用V表示顶点的集合
+         * 2.一组边：通常用E表示边的集合（边是顶点之间的连线，可有向、可无向）
+         * 
+         * 图的表示方法：
+         * 1.邻接矩阵（二维数组）
+         * 2.邻接表
+         * **/    
+    </script>
+    <script src="./dict.js"></script>
+    <script>
+        // 创建图类
+        function Graph() {
+            this.vertexes = []; // 顶点
+            this.edges = new Dictionary(); // 边
+        }
+        // 添加顶点
+        Graph.prototype.addVertex = function(v) {
+            this.vertexes.push(v);
+            this.edges.set(v, []);
+        }
+        // 添加边
+        Graph.prototype.addEdge = function(v1, v2) {
+            this.edges.get(v1).push(v2);
+            this.edges.get(v2).push(v1);
+        }
+        Graph.prototype.toString = function() {
+            var result = '';
+            this.vertexes.forEach(v => {
+                result += v + '->';
+                var edges = this.edges.get(v);
+                edges.forEach(e => result += e + ' ');
+                result += '\n';
+            });
+            return result;
+        }
+        // 遍历:广度优先搜索BFS、深度优先搜索DFS，两种访问方法都需要明确指出第一个被访问的顶点
+        // BFS: 基于队列，入队列的顶点先被探索
+        // DFS：基于栈或使用递归，通过将顶点存入栈中，顶点是沿着路径被探索的，存在新的相邻顶点就去访问
+        // 为了记录顶点是否被访问过，用三种颜色来反映他们的状态：白色-没被访问；灰色：被访问但没探索；黑色：被访问被探索
+        Graph.prototype.toString = function() {
+        }
+        // 初始化状态颜色
+        Graph.prototype.initializeColor = function() {
+            var colors = {};
+            this.vertexes.forEach(v => colors[v] = 'white');
+            return colors;
+        }
+
+
+        // 测试
+        var g = new Graph();
+        var my = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+        my.forEach(i => g.addVertex(i));
+        g.addEdge('a', 'b');
+        g.addEdge('a', 'c');
+        g.addEdge('a', 'd');
+        g.addEdge('c', 'd');
+        g.addEdge('c', 'g');
+        g.addEdge('d', 'g');
+        g.addEdge('d', 'h');
+        g.addEdge('b', 'e');
+        g.addEdge('b', 'f');
+        g.addEdge('e', 'i');
+        console.log(g.toString());
+    </script>
+</body>
+</html>
