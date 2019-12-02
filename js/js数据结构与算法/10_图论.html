@@ -19,6 +19,7 @@
          * **/    
     </script>
     <script src="./dict.js"></script>
+    <script src="./queue.js"></script>
     <script>
         // 创建图类
         function Graph() {
@@ -49,13 +50,47 @@
         // BFS: 基于队列，入队列的顶点先被探索
         // DFS：基于栈或使用递归，通过将顶点存入栈中，顶点是沿着路径被探索的，存在新的相邻顶点就去访问
         // 为了记录顶点是否被访问过，用三种颜色来反映他们的状态：白色-没被访问；灰色：被访问但没探索；黑色：被访问被探索
-        Graph.prototype.toString = function() {
-        }
         // 初始化状态颜色
         Graph.prototype.initializeColor = function() {
             var colors = {};
             this.vertexes.forEach(v => colors[v] = 'white');
             return colors;
+        }
+        // 广度优先搜索
+        Graph.prototype.bfs = function(firstNode, handler) {
+            // 1.初始化色值
+            var colors = this.initializeColor();
+            // 2.创建队列
+            var queue = new Queue();
+            this.bfsNode(firstNode, queue, colors, handler);
+        }
+        Graph.prototype.bfsNode = function(node, queue, colors, handler) {
+            if (colors[node] !== 'white') {
+                return;
+            }
+            handler(node);
+            colors[node] = 'black';
+            var edges = this.edges.get(node);
+            // 将当前遍历的顶点相邻的顶点压入队列中
+            edges.forEach(e => queue.enqueue(e));
+            while(queue.size() !== 0) {
+                this.bfsNode(queue.dequeue(), queue, colors, handler);
+            }
+        }
+        // 深度优先搜索
+        Graph.prototype.dfs = function(firstNode, handler) {
+            var colors = this.initializeColor();
+            this.dfsNode(colors, firstNode, handler);
+
+        }
+        Graph.prototype.dfsNode = function(colors, node, handler) {
+            if (colors[node] !== 'white') {
+                return;
+            }
+            handler(node);
+            colors[node] = 'black';
+            var edges = this.edges.get(node);
+            edges.forEach(e => this.dfsNode(colors, e, handler));
         }
 
 
@@ -74,6 +109,12 @@
         g.addEdge('b', 'f');
         g.addEdge('e', 'i');
         console.log(g.toString());
+        g.bfs(g.vertexes[0], function(n) {
+            console.log(n);
+        })
+        g.dfs(g.vertexes[0], function(n) {
+            console.log(n);
+        })
     </script>
 </body>
 </html>
