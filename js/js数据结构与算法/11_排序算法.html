@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>排序算法</title>
+</head>
+<body>
+    <script>
+        // 大O表示法   
+        // O(1) 常数的
+        // O(log(n)) 对数的
+        // O(n) 线性的
+        // O(nlog(n)) 线性和对数乘积
+        // O(n^2) 平方
+        // O(2^n) 指数的
+        /**
+         * 推导大O表示法的方式：
+         * 1.用常量1取代运行时间中所有的加法常量
+         * 2.在修改后的运行次数函数中，只保留最高阶项
+         * 3.如果最高存在且不为1，则去除与这个项相乘的常数
+         * eg: 3N^2 + 2N + 1  --> O(N^2)
+         * **/
+        // 简单排序：冒泡、选择、插入
+        // 高级排序：希尔、快速
+    </script>
+    <script>
+        // 封装排序的数据类
+        function ArrayList() {
+            this.array = [];
+        }
+        ArrayList.prototype.insert = function(el) {
+            this.array.push(el);
+        }
+        ArrayList.prototype.toString = function(el) {
+            return this.array.join('-');
+        }
+        // 交换两个位置
+        ArrayList.prototype.swap = function(m, n) {
+            var temp = this.array[m];
+            this.array[m] = this.array[n];
+            this.array[n] = temp;
+        }
+        // 冒泡排序(O(N^2))
+        ArrayList.prototype.bubbleSort = function() {
+            var len = this.array.length;
+            for (var i = 0; i < len - 1; i++) {
+                for (var j = 0; j < len - i - 1; j++) {
+                    if (this.array[j] > this.array[j+1]) {
+                        this.swap(j, j+1);
+                    }
+                }
+            }
+        }
+        // 选择排序(O(N))
+        ArrayList.prototype.selectSort = function() {
+            var len = this.array.length;
+            for (var i = 0; i < len - 1; i++) {
+                var current = this.array[i];
+                for (var j = i + 1; j < len; j++) {
+                    if (current > this.array[j]) {
+                        current = this.array[j];
+                        this.swap(i, j);
+                    }
+                }
+            }
+        }
+        // 插入排序:局部有序
+        ArrayList.prototype.insertSort = function() {
+            var len = this.array.length;
+            for (var i = 1; i < len; i++) {
+                var current = this.array[i];
+                var j = i;
+                var prev = this.array[j-1];
+                while(j > 0 && current < prev) {
+                    this.array[j] = this.array[j-1];
+                    j -= 1;
+                    prev = this.array[j-1];
+                }
+                this.array[j] = current;
+            }
+        }
+        // 希尔排序:插入排序的改进版,增加了一个增量
+        ArrayList.prototype.shellSort = function() {
+            // 1.获取数组长度
+            var len = this.array.length;
+            // 2.初始化增量
+            var gap = Math.floor(len / 2);
+            // 3.while循环，gap不断减小
+            while(gap >= 1) {
+                // 4.以gap作为间隔进行分组，对分组进行插入排序
+                for (var i = gap; i < len; i++) {
+                    var temp = this.array[i];
+                    var j = i;
+                    while(temp < this.array[j - gap] && j > gap - 1) {
+                        this.array[j] = this.array[j - gap];
+                        j -= gap;
+                    }
+                    // 5.将j位置的元素赋值temp
+                    this.array[j] = temp;
+                }
+                gap = Math.floor(gap / 2);
+            }
+        }
+        // 快速排序
+        // 快速排序枢纽的选择
+        ArrayList.prototype.medium = function(left, right) {
+            // 1.取出中间位置
+            var center = Math.floor((left + right) / 2);
+            console.log('center:', center);
+            // 2.判断大小，进行交换
+            if (this.array[left] > this.array[center]) {
+                this.swap(left, center);
+            }
+            if (this.array[left] > this.array[right]) {
+                this.swap(left, right);
+            }
+            if (this.array[center] < this.array[left]) {
+                this.swap(left, center);
+            }
+            if (this.array[center] > this.array[right]) {
+                this.swap(center, right);
+            }
+            if (this.array[right] < this.array[center]) {
+                this.swap(left, center);
+            }
+            if (this.array[right] < this.array[left]) {
+                this.swap(left, right);
+            }
+            
+            // 3.将center换到right-1的位置
+            this.swap(center, right-1);
+            return this.array[right-1];
+        }
+        // 快速排序的实现
+        ArrayList.prototype.quickSort = function() {
+            this.quick(0, this.array.length - 1);
+        }
+        ArrayList.prototype.quick = function(left, right) {
+            // 1.结束条件
+            if (left >= right) return;
+            // 2.获取枢纽
+            var pivot = this.medium(left, right);
+            // 3.定义变量，用于记录当前找到的位置
+            var i = left;
+            var j = right - 1;
+            // 4.开始进行交换
+            while(true) {
+                while(this.array[i] < pivot) {
+                    i++;
+                }
+                while(this.array[j] >= pivot) {
+                    j--;
+                }
+                if (i < j) {
+                    this.swap(i, j);
+                } else {
+                    break;
+                }
+            }
+            // 5.将枢纽放置在正确的位置，i的位置
+            this.swap(i, right - 1);
+            // 6.分而治之
+            this.quick(left, i - 1);
+            this.quick(i + 1, right);
+        }
+
+
+        // 测试
+        var ary = new ArrayList();
+        ary.insert(66);
+        ary.insert(12);
+        ary.insert(88);
+        ary.insert(23);
+        ary.insert(5);
+        ary.insert(13);
+        ary.insert(90);
+        ary.insert(87);
+        console.log(ary.toString());
+        // ary.bubbleSort();
+        // ary.selectSort();
+        // ary.insertSort();
+        // ary.shellSort();
+        ary.quickSort();
+        console.log(ary.toString());
+    </script>
+</body>
+</html>
