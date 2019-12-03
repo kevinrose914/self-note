@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 1.创建Object实例的两种方法
+        var person1 = new Object();
+        person1.name = '111';
+        var person2 = {
+            name: '222'
+        };
+        
+
+        // 2.数组
+        var ary = [1,2,3,43];
+        console.log(ary.push(5), ary);
+        console.log(ary.pop(), ary);
+        console.log(ary.shift(), ary);
+        console.log(ary.unshift(0), ary);
+
+        // 3.数组的slice和splice的区别
+        // slice(start, end):从原数组中返回指定位置的某段数组
+        // splice(start, end, item):改变原数组
+
+        // 4.函数声明和函数表达式的区别
+        // 解析器在执行环境中加载数据时，会率先读取函数声明，并使其在执行任何代码之前可用。
+        // 函数表达式必须等到解析器执行到他所在的代码行，才会被解释执行
+
+        // 改变函数执行环境this指向的方法
+        // bind，call，apply
+    </script>
+</body>
+</html>

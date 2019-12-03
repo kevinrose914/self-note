@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 封装ajax
+        function ajax(method, url, data, isAsyn) {
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true; // 是否带cookie
+            xhr.open(method, url, isAsyn);
+            xhr.setRequestHeader('key', 'value'); // 设置请求头必须在open之后，send之前
+            xhr.send(data);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
+                        // 成功
+                    } else {
+                        // 失败
+                    }
+                }
+            }
+            xhr.abort(); // 取消异步请求
+            xhr.getResponseHeader('key'); // 获取相应的响应头部信息
+            xhr.getAllResponseHeaders(); // 获取所有响应头的信息 
+            xhr.onloadstart = function() {}
+            xhr.onprogress = function() {}
+            xhr.onerror = function() {}
+            xhr.onabort = function() {}
+            xhr.onload = function() {}
+            xhr.onloadend = function() {} // 没有浏览器支持
+        }   
+        
+        // FormData
+        var data = new FormData();
+        data.append('name', 'rose');
+
+        // 跨域
+    </script>
+</body>
+</html>

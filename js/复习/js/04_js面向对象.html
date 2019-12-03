@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // ECMAScript的两种属性：数据属性、访问器属性
+
+        // 1.数据属性
+        var person = {};
+        Object.defineProperty(person, 'name', {
+            configurable: true, // 1.1是否支持delete操作符进行删除
+            enumerable: true, // 1.2是否支持for-in进行枚举
+            writable: true, // 1.3是否可以改变其值
+            value: '1111' // 1.4值
+        });
+        // 1.5注意：configurable一旦改为false后，无法再将其改为true，会报错
+
+        // 2.访问器属性
+        var person2 = {
+            _name: ''
+        };
+        Object.defineProperty(person2, 'name', {
+            configurable: true, // 2.1是否支持delete操作符进行删除
+            enumerable: true, // 2.2是否支持for-in进行枚举
+            get: function() { // 2.3调用person2.name时的返回值
+                return this._name;
+            },
+            set: function(name) { // 2.4利用person2.name='111'时
+                this._name = name;
+            }
+        });
+
+        // 3.定义多个属性
+        Object.defineProperties(person2, {
+            old: {
+                // xxx
+            },
+            name: {
+                // xxx
+            }
+        })
+
+        // 4.读取属性的特性：Object.getOwnPropertyDescriptor()
+
+        // 5.创建对象的方式
+        // 5.1工厂模式:没有解决对象的识别问题
+        function createPerson(name, age) {
+            var o = new Object();
+            o.name = name;
+            o.age = age;
+            return o;
+        }
+
+        // 5.2构造函数模式:不足之处是每个方法都要再每个实例上重新创建一遍，浪费内存资源
+        function Person(name, age){
+            this.name = name;
+            this.age = age;
+            this.go = function() {};
+        }
+        // 5.2.1new操作符调用构造函数经历的4个步骤
+        // 5.2.1.1 创建一个新对象
+        // 5.2.1.2 将构造函数的作用域赋给新对象（this指向了这个新对象）
+        // 5.2.1.3 执行构造函数中的代码
+        // 5.2.1.4 返回新对象
+
+        // 5.2.2 检测对象类型：instanceof操作符
+
+        // 5.3 原型模式：不足之处是所有属性被实例共享，当遇到引用类型值的属性时，问题突出
+        function Man() {
+        }
+        Man.prototype.list = [1,2,3,4];
+        Man.prototype.go = function() {};
+
+        // 5.4 理解原型对象
+        // isPrototypeOf()
+        // Object.getPrototypeOf()
+        // hasOwnProperty() 检测一个属性是存在于实例中，还是存在于原型中
+        // in 操作符只要通过对象能够访问到的属性就返回true，不管属性是存在于实例或者原型中
+        // Object.keys()返回对象上可枚举的实例属性
+        // Object.getOwnPropertyNames()返回所有实例属性，不管属性是否可枚举
+
+        // 5.5 组合使用构造函数和原型模式
+        function Man2(list) {
+            this.list = list;
+        }
+        Man2.prototype.go = function() {};
+
+        // 5.6 动态原型模式
+        function Man3(list) {
+            this.list = list;
+            if (typeof this.go !== 'function') {
+                Man3.prototype.go = function() {};
+            }
+        }
+
+        // 5.7 寄生构造函数模式:返回的实例不能使用instanceof操作符进行判断对象类别
+        function Man4(list) {
+            var o = new Object();
+            o.list = list;
+            return o;
+        }
+
+        // 6.继承
+        // 6.1 原型链继承:不足之处在于会包含引用类型值的原型
+        function Super() {}
+        function Man5() {}
+        Man5.prototype = new Super();
+
+        // 6.2 接用构造函数:不足之处在于父类的方法无法得到复用
+        function Super1() {}
+        function Man6() {
+            Super1.call(this);
+        }
+
+        // 6.3 组合继承:不足之处在于父类的属性在子类的实例中以及原型中都有，浪费内存
+        function Super2() {}
+        function Man7() {
+            Super1.call(this);
+        }
+        Man7.prototype = new Super2();
+
+        // 6.4 Object.create()实现原型是继承
+
+        // 6.4 寄生式继承
+        function Man8(object) {
+            var clone = Object.create(object);
+            clone.go = function() {};
+            return clone;
+        }
+
+        // 6.5 寄生组合式继承
+        function Super3() {}
+        function Man9() {
+            Super3.call(this);
+        }
+        Man9.prototype = Object.create(Super3.prototype);
+    </script>
+
+    <script>
+        var people = {
+            id: '11'
+        };
+        Object.defineProperties(people, {
+            _name: {
+                configurable: false,
+                writable: false,
+                enumerable: false,
+                value: 'rose'
+            }
+        });
+        console.log(Object.getOwnPropertyDescriptor(people, '_name'), people)
+        console.log(Object.getOwnPropertyDescriptor(people, 'id'))
+    </script>
+</body>
+</html>
