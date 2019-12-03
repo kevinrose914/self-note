@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        window.jQuery = {
+            // 1.简易判断是否是对象
+            isPlainObject: function(object) {
+                return Object.prototype.toString.call(object) === '[object Object]';
+            }
+        };
+        window.jQuery.extend = function() {
+            var options, name, src, copy, copyIsArray, clone,
+                target = arguments[ 0 ] || {},
+                i = 1,
+                length = arguments.length,
+                deep = false;
+
+            // 2.如果第一个参数是布尔值
+            if ( typeof target === "boolean" ) {
+                deep = target;
+
+                // Skip the boolean and the target
+                target = arguments[ i ] || {};
+                i++;
+            }
+
+            // 如果第一个参数不是对象，也不是方法
+            if ( typeof target !== "object" && !isFunction( target ) ) {
+                target = {};
+            }
+
+            // 如果只有一个参数，那就是对jquery进行扩展
+            if ( i === length ) {
+                target = this;
+                i--;
+            }
+            // 遍历参数，取得被拷贝的参数
+            for ( ; i < length; i++ ) {
+
+                // 被拷贝的参数不为null
+                if ( ( options = arguments[ i ] ) != null ) {
+
+                    // 遍历被拷贝的参数的所有属性
+                    for ( name in options ) {
+                        copy = options[ name ]; // 属性对应的值
+
+                        // Prevent Object.prototype pollution
+                        // Prevent never-ending loop
+                        if ( name === "__proto__" || target === copy ) {
+                            continue;
+                        }
+
+                        // 如果是深拷贝，且有值，值为对象或者数组
+                        if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
+                            ( copyIsArray = Array.isArray( copy ) ) ) ) {
+                            // 深拷贝对象或者数组
+                            src = target[ name ];
+
+                            // Ensure proper type for the source value
+                            if ( copyIsArray && !Array.isArray( src ) ) {
+                                clone = [];
+                            } else if ( !copyIsArray && !jQuery.isPlainObject( src ) ) {
+                                clone = {};
+                            } else {
+                                clone = src;
+                            }
+                            copyIsArray = false;
+
+                            // Never move original objects, clone them
+                            target[ name ] = jQuery.extend( deep, clone, copy );
+
+                        // Don't bring in undefined values
+                        } else if ( copy !== undefined ) {
+                            // 如果是浅拷贝，或者深拷贝的值不是引用类型
+                            target[ name ] = copy;
+                        }
+                    }
+                }
+            }
+
+            // Return the modified object
+            return target;
+        };    
+    </script>
+    <script>
+        var target = {
+            name: 'rose'
+        };
+        var copy = {
+            id: '1'
+        };
+        var copy2 = window.jQuery.extend(true, target, copy);
+        console.log(copy2);
+    </script>
+</body>
+</html>
