@@ -208,23 +208,23 @@
             lastCallTime = time
 
             if (isInvoking) { // 5.4可以执行回调
-            if (timerId === undefined) { // 5.4.1首次触发
-                return leadingEdge(lastCallTime)
-            }
-            if (maxing) { // 5.5如果有最大等待时间
-                /**
-                 * 这儿其实就是用于函数节流的
-                 * 注意：这个maxWait指的是本次触发debounce时间与上次调用了回调的时间的差值
-                 * 在密集调用时，time(本次触发debunce的时间)-lastCallTime(上次触发debounce的时间)是小于wait的
-                 * 但是如果这个maxWait存在
-                 * 意味着只要time(本次触发debunce的时间)-lastInvokeTime(上次调用回调的时间)大于了maxWait的，就可以直接执行回调
-                 */
-                timerId = startTimer(timerExpired, wait)
-                return invokeFunc(lastCallTime)
-            }
+                if (timerId === undefined) { // 5.4.1首次触发
+                    return leadingEdge(lastCallTime)
+                }
+                if (maxing) { // 5.5如果有最大等待时间
+                    /**
+                     * 这儿其实就是用于函数节流的
+                     * 注意：这个maxWait指的是本次触发debounce时间与上次调用了回调的时间的差值
+                     * 在密集调用时，time(本次触发debunce的时间)-lastCallTime(上次触发debounce的时间)是小于wait的
+                     * 但是如果这个maxWait存在
+                     * 意味着只要time(本次触发debunce的时间)-lastInvokeTime(上次调用回调的时间)大于了maxWait的，就可以直接执行回调
+                     */
+                    timerId = startTimer(timerExpired, wait)
+                    return invokeFunc(lastCallTime)
+                }
             }
             if (timerId === undefined) {
-            timerId = startTimer(timerExpired, wait)
+                timerId = startTimer(timerExpired, wait)
             }
             return result
         }

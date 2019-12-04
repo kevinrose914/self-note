@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // http协议缓存可分为两类：强制缓存、对比缓存
+        
+        // 1. 强制缓存：利用Expires或者Cache-Control:max-age来控制，未过期则强制使用缓存数据
+        // Expires是http1.0的产物，其用的是绝对时间。绝对时间有可能造成缓存命中误差
+        // max-age是相对时间，单位为秒。
+        // max-age的优先级高于Expires
+
+        // 2. 对比缓存：Cache-Control:no-cache,利用Etag或者Last-Modified
+        // Etag：服务器提供给客户端的当前资源的唯一标识
+        // Last-Modified：服务器提供给客户端的当前资源最后修改时间
+        // Etag的优先级高于Last-Modified
+        // 如果上述两个中的其中一个变了，则不会从缓存中取数据
+
+        // 推荐两种缓存技术联合使用
+        // Cache-Control:max-age
+        // Etag/If-None-Match
+        // Last-Modified/If-Modified-Since
+        // 判断步骤：
+        // 1.查询max-age是否过期，如果未过期，则用缓存；如果过期，走第二步
+        // 2.查询Etag是否存在，若存在，向服务器请求带If-None-Match，由服务器决策是否走304；若不存在，走第三步
+        // 3.查询Last-Modified是否存在，若存在，向服务器请求带If-Modified-Since，由服务器决策是否走304；若不存在，走第四步
+        // 4.数据重新从服务器获取
+    </script>
+</body>
+</html>
