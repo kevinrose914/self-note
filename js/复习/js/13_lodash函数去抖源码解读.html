@@ -115,15 +115,15 @@
         // 开起延时任务
         function startTimer(pendingFunc, wait) {
             if (useRAF) {
-            root.cancelAnimationFrame(timerId)
-            return root.requestAnimationFrame(pendingFunc)
+                root.cancelAnimationFrame(timerId)
+                return root.requestAnimationFrame(pendingFunc)
             }
             return setTimeout(pendingFunc, wait)
         }
 
         function cancelTimer(id) {
             if (useRAF) {
-            return root.cancelAnimationFrame(id)
+                return root.cancelAnimationFrame(id)
             }
             clearTimeout(id)
         }
@@ -163,7 +163,7 @@
         function timerExpired() {
             const time = Date.now()
             if (shouldInvoke(time)) {
-            return trailingEdge(time)
+                return trailingEdge(time)
             }
             // 如果延时还没完，重启一个延时器，延时时长更改为还剩余多少时间
             timerId = startTimer(timerExpired, remainingWait(time))
