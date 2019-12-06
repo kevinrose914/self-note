@@ -238,3 +238,19 @@
       }
     })
   }
+
+
+// vue感觉比较犀利的用法
+Dep.target = null
+const targetStack = []
+
+// 将当前的Dep.target暂时存到targetStack栈中，然后改变Dep.target
+export function pushTarget (_target: ?Watcher) {
+  if (Dep.target) targetStack.push(Dep.target)
+  Dep.target = _target
+}
+
+// 从targetStack栈中取出之前存入的Dep.target
+export function popTarget () {
+  Dep.target = targetStack.pop()
+}
