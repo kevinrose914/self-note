@@ -3,12 +3,12 @@
  * (c) 2019 Evan You
  * @license MIT
  */
-'use strict';
-
 function applyMixin (Vue) {
   var version = Number(Vue.version.split('.')[0]);
 
   if (version >= 2) {
+    // 扩展vue，让其实例组件的beforeCreate钩子增加一个vuexInit回调
+    // vuexInit回调函数实质就是给当前实例增加上一个$store属性，属性指向store类
     Vue.mixin({ beforeCreate: vuexInit });
   } else {
     // override init and inject vuex init procedure
@@ -29,8 +29,10 @@ function applyMixin (Vue) {
    */
 
   function vuexInit () {
+    // 1.获取当前vue实例的$options属性
     var options = this.$options;
     // store injection
+    // 2.为当前vue实例增加$store属性，属性值指向store类，store类是在vue的入口文件中init进去的
     if (options.store) {
       this.$store = typeof options.store === 'function'
         ? options.store()
@@ -197,6 +199,7 @@ ModuleCollection.prototype.register = function register (path, rawModule, runtim
     assertRawModule(path, rawModule);
   }
 
+  // 1.包装module，初始化其state属性
   var newModule = new Module(rawModule, runtime);
   if (path.length === 0) {
     this.root = newModule;
@@ -206,6 +209,7 @@ ModuleCollection.prototype.register = function register (path, rawModule, runtim
   }
 
   // register nested modules
+  // 2.注册多个modules
   if (rawModule.modules) {
     forEachValue(rawModule.modules, function (rawChildModule, key) {
       this$1.register(path.concat(key), rawChildModule, runtime);
@@ -297,9 +301,7 @@ var Store = function Store (options) {
   var this$1 = this;
   if ( options === void 0 ) options = {};
 
-  // Auto install if it is not done yet and `window` has `Vue`.
-  // To allow users to avoid auto-installation in some cases,
-  // this code should be placed here. See #731
+  // 1.备份vue，并扩展vue
   if (!Vue && typeof window !== 'undefined' && window.Vue) {
     install(window.Vue);
   }
@@ -314,20 +316,19 @@ var Store = function Store (options) {
   var strict = options.strict; if ( strict === void 0 ) strict = false;
 
   // store internal state
+  // 2.store的内部状态
   this._committing = false;
   this._actions = Object.create(null);
   this._actionSubscribers = [];
   this._mutations = Object.create(null);
   this._wrappedGetters = Object.create(null);
   this._modules = new ModuleCollection(options);
-  /**
-   * this._modules = { root: {...} }
-   */
   this._modulesNamespaceMap = Object.create(null);
   this._subscribers = [];
   this._watcherVM = new Vue();
 
   // bind commit and dispatch to self
+  // 3.这儿为啥要重新绑定一次？
   var store = this;
   var ref = this;
   var dispatch = ref.dispatch;
@@ -393,7 +394,6 @@ Store.prototype.commit = function commit (_type, _payload, _options) {
   }
   this._withCommit(function () {
     entry.forEach(function commitIterator (handler) {
-      // 执行mutation，更改state
       handler(payload);
     });
   });
@@ -621,7 +621,7 @@ function installModule (store, rootState, path, module, hot) {
   }
 
   var local = module.context = makeLocalContext(store, namespace, path);
-  // 整合modules里面所有的actions、mutations、getters，整合到store上
+
   module.forEachMutation(function (mutation, key) {
     var namespacedType = namespace + key;
     registerMutation(store, namespacedType, mutation, local);
@@ -802,6 +802,7 @@ function unifyObjectStyle (type, payload, options) {
   return { type: type, payload: payload, options: options }
 }
 
+// 备份vue，并扩展vue的beforeCreate钩子函数
 function install (_Vue) {
   if (Vue && _Vue === Vue) {
     if (process.env.NODE_ENV !== 'production') {
@@ -1001,7 +1002,7 @@ function getModuleByNamespace (store, helper, namespace) {
   return module
 }
 
-var index = {
+var index_esm = {
   Store: Store,
   install: install,
   version: '3.1.1',
@@ -1012,4 +1013,5 @@ var index = {
   createNamespacedHelpers: createNamespacedHelpers
 };
 
-module.exports = index;
+export default index_esm;
+export { Store, install, mapState, mapMutations, mapGetters, mapActions, createNamespacedHelpers };
