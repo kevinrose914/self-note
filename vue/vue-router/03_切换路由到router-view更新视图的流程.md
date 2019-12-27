@@ -1,17 +1,17 @@
-### 概述
-> 1.切换路由后，首先更新路由route属性
-> 2.router-view组件render方法，会去获取父组件的$route方法，父组件的$route方法实质是去取父组件的this._routerRoot._route
-> 3.this._routerRoot._route又是去取router.history.current
-> 4.由于this._routerRoot._route已经构建了依赖追踪。故该依赖会去收集router-view的watcher
-> 5.后续更新，dep会通知router-view的watcher执行视图更新
+### 概述（这儿只展示了HTML5History模式的视图更新流程）
+> 1. 切换路由后，首先更新路由route属性
+> 2. router-view组件render方法，会去获取父组件的$route方法，父组件的$route方法实质是去取父组件的this._routerRoot._route
+> 3. this._routerRoot._route又是去取router.history.current
+> 4. 由于this._routerRoot._route已经构建了依赖追踪。故该依赖会去收集router-view的watcher
+> 5. 后续更新，dep会通知router-view的watcher执行视图更新
 
 ### router.push
-> 1.push后调用transitionTo方法
-> 2.在transitionTo方法中，首先调用match方法，根据当前push的路由路径以及该路径对应的record去创建route对象
-> 3.route对象创建后，再调用confirmTransition方法，包装路由钩子函数，并将这些钩子函数按顺序依次执行
-> 4.上述钩子函数执行完毕后，执行传入confirmTransition中的回调函数onComplete
-> 5.在onComplete函数中执行了updateRoute方法，该方法更新了this.current的值。且执行了index.js中init方法内history.listen中的回调函数
-> 6.执行回调函数后，改变了vue根实例的_route属性，由于该属性早已构建了依赖追踪。故该dep回去通知他所收集的watcher执行更新。正好router-view在初始化的时候，其watcher已经被这个dep收集了。所以router-view重新执行了render函数，重新根据route.current去获取路由的components属性，components属性就是vue的options。最后根据options重新createElement更新视图
+> 1. push后调用transitionTo方法
+> 2. 在transitionTo方法中，首先调用match方法，根据当前push的路由路径以及该路径对应的record去创建route对象
+> 3. route对象创建后，再调用confirmTransition方法，包装路由钩子函数，并将这些钩子函数按顺序依次执行
+> 4. 上述钩子函数执行完毕后，执行传入confirmTransition中的回调函数onComplete
+> 5. 在onComplete函数中执行了updateRoute方法，该方法更新了this.current的值。且执行了index.js中init方法内history.listen中的回调函数
+> 6. 执行回调函数后，改变了vue根实例的_route属性，由于该属性早已构建了依赖追踪。故该dep回去通知他所收集的watcher执行更新。正好router-view在初始化的时候，其watcher已经被这个dep收集了。所以router-view重新执行了render函数，重新根据route.current去获取路由的components属性，components属性就是vue的options。最后根据options重新createElement更新视图
 ```js
 // html5.js
 push (location: RawLocation, onComplete?: Function, onAbort?: Function) {
