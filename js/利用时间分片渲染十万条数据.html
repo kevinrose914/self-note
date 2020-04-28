@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #container {
+            margin: 20px auto;
+            border: 1px solid red;
+            width: 400px;
+            height: 700px;
+            overflow: auto;
+        }
+        .item {
+            height: 30px;
+            width: 380px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            line-height: 30px;
+            text-align: center;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        var renderItems = {
+            total: 100000,
+            container: document.getElementById('container'),
+            // 1. 最粗暴的做法，使用一次性渲染
+            fn1() {
+                let now = Date.now();
+                for (let i = 0; i < this.total; i++) {
+                    let li = document.createElement('div');
+                    li.classList.add('item');
+                    li.innerText = `第${i+1}个item`;
+                    this.container.appendChild(li);
+                }
+                console.log('js运行时间:', Date.now() - now);
+                setTimeout(() => {
+                    console.log('总运行时间:', Date.now() - now);
+                }, 0)
+            },
+            // 2. 使用定时器
+            once: 20,
+            index: 0,
+            fn2(curTotal, curIndex) {
+                if (curTotal <= 0) return false;
+                let page = this.total / this.once;
+                // 当前需要渲染的个数
+                let pageCount = Math.min(curTotal, this.once);
+                setTimeout(() => {
+                    for (let i = 0; i < pageCount; i++) {
+                        let li = document.createElement('div');
+                        li.classList.add('item');
+                        li.innerText = `第${curIndex+i+1}个item`;
+                        this.container.appendChild(li);
+                        this.container.scrollTop = 9999999;
+                    }
+                    this.fn2(curTotal - pageCount, curIndex + pageCount)
+                }, 0);
+            },
+            // 3. 使用requestAnimationFrame
+            fn3(curTotal, curIndex) {
+                if (curTotal <= 0) return false;
+                let page = this.total / this.once;
+                // 当前需要渲染的个数
+                let pageCount = Math.min(curTotal, this.once);
+                window.requestAnimationFrame(() => {
+                    for (let i = 0; i < pageCount; i++) {
+                        let li = document.createElement('div');
+                        li.classList.add('item');
+                        li.innerText = `第${curIndex+i+1}个item`;
+                        this.container.appendChild(li);
+                        this.container.scrollTop = 9999999;
+                    }
+                    this.fn2(curTotal - pageCount, curIndex + pageCount)
+                }, 0);
+            },
+            // 4. 使用DocumentFragment优化
+            fn4(curTotal, curIndex) {
+                if (curTotal <= 0) return false;
+                let page = this.total / this.once;
+                // 当前需要渲染的个数
+                let pageCount = Math.min(curTotal, this.once);
+                window.requestAnimationFrame(() => {
+                    let fragment = document.createDocumentFragment();
+                    for (let i = 0; i < pageCount; i++) {
+                        let li = document.createElement('div');
+                        li.classList.add('item');
+                        li.innerText = `第${curIndex+i+1}个item`;
+                        fragment.appendChild(li);
+                        fragment.scrollTop = 9999999;
+                    }
+                    this.container.appendChild(fragment);
+                    this.fn2(curTotal - pageCount, curIndex + pageCount)
+                }, 0);
+            }
+        };
+        
+        window.onload = function() {
+            // renderItems.fn1();
+            // renderItems.fn2(renderItems.total, renderItems.index);
+            // renderItems.fn3(renderItems.total, renderItems.index);
+            renderItems.fn4(renderItems.total, renderItems.index);
+        }
+    </script>
+</body>
+</html>

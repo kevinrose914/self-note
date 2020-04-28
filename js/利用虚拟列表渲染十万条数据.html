@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+        }
+        #container {
+            border: 1px solid red;
+            width: 400px;
+            height: 100%;
+            overflow: auto;
+            position: relative;
+        }
+        .infinite-phantom {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: -1;
+        }
+        .infinite-list {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .item {
+            /* height: 30px; */
+            width: 380px;
+            border: 1px solid #ccc;
+            line-height: 30px;
+            text-align: center;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="infinite-phantom"></div>
+        <div class="infinite-list"></div>
+    </div>
+    <script>
+        // 当前每一项都是固定高度的情况
+        function renderItems(amount){
+            var start = 0,
+                visibleHeight = 700,
+                itemHeight = 30,
+                listHeight = amount * itemHeight,
+                visibleCount = Math.ceil(visibleHeight / itemHeight),
+                startOffset = 0,
+                end = start + visibleCount;
+            var phantom = document.querySelector('.infinite-phantom');
+            var container = document.querySelector('#container');
+            var listom = document.querySelector('.infinite-list');
+            phantom.style.height = `${listHeight}px`;
+            paint();
+
+            container.addEventListener('scroll', () => {
+                var scrollTop = container.scrollTop;
+                start = Math.floor(scrollTop / itemHeight);
+                end = start + visibleCount;
+                startOffset = scrollTop - (scrollTop % itemHeight);
+                paint();
+            }, false);
+
+            function paint() {
+                // 因为container在向上滚，所以这儿要用translate把listom往下移，做一个相对运动
+                listom.style.transform = `translate3d(0, ${startOffset}px, 0)`;
+                listom.innerHTML = '';
+                let fragment = document.createDocumentFragment();
+                for (var i = start; i < Math.min(end, amount); i++) {
+                    let li = document.createElement('div');
+                    li.classList.add('item');
+                    li.innerText = `第${i+1}个item`;
+                    fragment.appendChild(li);
+                }
+                listom.appendChild(fragment);
+            }
+        }
+
+        // 如果不固定高度
+        function renderItems2(data) {
+            var start = 0,
+                visibleHeight = document.documentElement.clientHeight,
+                itemHeight = 30,
+                estimatedItemSize = 30,
+                amount = data.length,
+                listHeight = amount * itemHeight,
+                visibleCount = Math.ceil(visibleHeight / itemHeight),
+                startOffset = 0,
+                end = start + visibleCount,
+                lock = false;
+            var positions = [];
+            for(let i = 0; i < amount; i++) {
+                positions.push({
+                    index: i,
+                    height: estimatedItemSize,
+                    top: estimatedItemSize*i,
+                    bottom: estimatedItemSize*(i+1)
+                })
+            }
+            var phantom = document.querySelector('.infinite-phantom');
+            var container = document.querySelector('#container');
+            var listom = document.querySelector('.infinite-list');
+            phantom.style.height = `${positions[positions.length-1].bottom}px`;
+            paint();
+
+            container.addEventListener('scroll', () => {
+                var scrollTop = container.scrollTop;
+                start = binarySearch(positions, scrollTop);
+                end = start + visibleCount;
+                startOffset = scrollTop - (scrollTop % itemHeight);
+                if (end > amount) {
+                    console.log('max', 'start:', start, 'end:', end);
+                    return
+                }
+                console.log('start:', start, 'end:', end);
+                paint();
+            }, false);
+
+            function binarySearch(list, value) {
+                let start = 0;
+                let end = list.length - 1;
+                let tempIndex = null;
+                while(start <= end){
+                    let midIndex = parseInt((start + end)/2);
+                    let midValue = list[midIndex].bottom;
+                    if(midValue === value){
+                        return midIndex + 1;
+                    }else if(midValue < value){
+                        start = midIndex + 1;
+                    }else if(midValue > value){
+                        if(tempIndex === null || tempIndex > midIndex){
+                            tempIndex = midIndex;
+                        }
+                        end = end - 1;
+                    }
+                }
+                return tempIndex;
+            }
+
+            function paint() {
+                // 因为container在向上滚，所以这儿要用translate把listom往下移，做一个相对运动
+                listom.style.transform = `translate3d(0, ${startOffset}px, 0)`;
+                listom.innerHTML = '';
+                let fragment = document.createDocumentFragment();
+                for (var i = start; i < Math.min(end, amount); i++) {
+                    let li = document.createElement('div');
+                    li.classList.add('item');
+                    li.innerText = `第${i+1}个: ${data[i]}`;
+                    li.setAttribute('id', `${i}`);
+                    fragment.appendChild(li);
+                }
+                listom.appendChild(fragment);
+                updatePostion();
+            }
+
+            function updatePostion() {
+                setTimeout(() => {
+                    let nodes = document.querySelectorAll('.item');
+                    nodes.forEach(node => {
+                        let rect = node.getBoundingClientRect();
+                        let height = rect.height;
+                        let index = +node.id.slice(0);
+                        let oldHeight = positions[index].height;
+                        let dValue = oldHeight - height;
+                        //存在差值
+                        if(dValue){
+                            positions[index].bottom = positions[index].bottom - dValue;
+                            positions[index].height = height;
+                            for(let k = index + 1;k<positions.length; k++){
+                                positions[k].top = positions[k-1].bottom;
+                                positions[k].bottom = positions[k].bottom - dValue;
+                            }
+                        }
+                    });
+                    // position变化后，要重新赋值高度
+                    phantom.style.height = `${positions[positions.length-1].bottom}px`;
+                }, 0);
+            }
+        }
+
+        // renderItems(10000);
+        var data = [
+            'DOM回收是一个未被广泛使用的技术，它的用途是让DOM的节',
+            '是DOM节点本身并非耗能大户，但是也不是一点都不消耗性能，每一个节点都会增加一些额外的内存、布局、样式和绘制。如果一个站点的DOM节点过多，在低端设备上会发现明显的变慢，如果没有彻底卡死的话。同样需要注意的一点是，在一个较大的D',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            '是DOM节点本身并非耗能大户，但是也不是一点都不消耗性能，每一个节点都会增加一些额外的内存、布局、样式和绘制。如果一个站点的DOM节点过多，在低端设备上会发现明显的变慢，如果没有彻底卡死的话。同样需要注意的一点是，在一个较大的D',
+            '第一个障碍是滚动本身。由于我们在任何时刻DOM中只',
+            'DOM回收是一个未被广泛使用的技术',
+            '第一个障碍是滚动本身。由于我们在任何时刻DOM中只',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            '第一个障碍是滚动本身。由于我们在任何时刻DOM中只',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            '当我们进行滚动时，我们会检查是否viewport是否已经足够接近 runaway 的尾部。如果是的话，我们会通过把 sentinel和viewport中的剩余元素移向 runaway的底部来扩展 runaway，然后用新内容渲染这些元素。',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            '当我们进行滚动时，我们会检查是否viewport是否已经足够接近 runaway 的尾部。如果是的话，我们会通过把 sentinel和viewport中的剩余元素移向 runaway的底部来扩展 runaway，然后用新内容渲染这些元素。',
+            'DOM回收是一个未被广泛使用的技术',
+            '当我们进行滚动时，我们会检查是否viewport是否已经足够接近 runaway 的尾部。如果是的话，我们会通过把 sentinel和viewport中的剩余元素移向 runaway的底部来扩展 runaway，然后用新内容渲染这些元素。',
+            'DOM回收是一个未被广泛使用的技术',
+            '当我们进行滚动时，我们会检查是否viewport是否已经足够接近 runaway 的尾部。如果是的话，我们会通过把 sentinel和viewport中的剩余元素移向 runaway的底部来扩展 runaway，然后用新内容渲染这些元素。',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            '当我们进行滚动时，我们会检查是否viewport是否已经足够接近 runaway 的尾部。如果是的话，我们会通过把 sentinel和viewport中的剩余元素移向 runaway的底部来扩展 runaway，然后用新内容渲染这些元素。',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+            'DOM回收是一个未被广泛使用的技术',
+        ];
+        renderItems2(data);
+    </script>
+</body>
+</html>

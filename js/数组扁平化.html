@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>数组扁平化</title>
+</head>
+<body>
+    <script>
+        // 数组扁平化
+        var arr = [1, 2, 3, [4, 5], [6, 7, [8, 9, [10, 11], 12], 13], 14];
+
+        var flatAryFn = function(arr) {
+            var arrString = JSON.stringify(arr);
+            return {
+                // 1. 通过es6的方法
+                fn1() {
+                    return arr.flat(Infinity);
+                },
+                // 2. 通过replace+split
+                fn2() {
+                    return arrString.replace(/(\[|\])/g, '').split(',');
+                },
+                // 3. 通过replace
+                fn3() {
+                    return JSON.parse(`[${arrString.replace(/(\[|\])/g, '')}]`);
+                },
+                // 4. 通过递归查询
+                fn4(result, ary) {
+                    ary = ary || arr;
+                    result = result || [];
+                    ary.forEach(i => {
+                        if (Array.isArray(i)) {
+                            this.fn4(result, i);
+                        } else {
+                            result.push(i);
+                        }
+                    }, this);
+                },
+                // 5. 利用reduce
+                fn5(ary) {
+                    var that = this;
+                    ary = ary || arr;
+                    return ary.reduce((prev, next) => {
+                        return prev.concat(Array.isArray(next) ? that.fn5(next) : next);
+                    }, []);
+                },
+                // 6. 利用扩展运算符
+                fn6() {
+                    while(arr.some(Array.isArray)) {
+                        arr = [].concat(...arr)
+                    }
+                    return arr;
+                }
+            };
+        }
+
+        var flat = flatAryFn(arr);
+
+        console.log(flat.fn1());
+        console.log(flat.fn2());
+        console.log(flat.fn3());
+        var result = [];
+        flat.fn4(result)
+        console.log(result);
+        console.log(flat.fn5());
+        console.log(flat.fn6());
+    </script>
+</body>
+</html>
